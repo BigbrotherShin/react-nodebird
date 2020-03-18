@@ -57,12 +57,12 @@ const Signup = () => {
     dispatch({
       type: SIGN_UP_REQUEST,
       data: {
-        id,
+        userId: id,
         password,
-        nick,
+        nickname: nick,
       },
     });
-  }, [password, passwordCheck, term]);
+  }, [password, passwordCheck, term, id, nick]);
 
   useEffect(() => {
     // if (!signedUp) return;
@@ -85,8 +85,6 @@ const Signup = () => {
     e => {
       if (!term) setTermError(false);
       setTerm(e.target.checked);
-      console.log(e.target.checked);
-      console.log('term state: ', term);
     },
     [term],
   );

@@ -18,17 +18,16 @@ import {
 } from '../reducers/user';
 import axios from 'axios';
 
-function loginAPI() {
+function loginAPI(loginData) {
   // 서버에 요청을 보내는 부분
-  return axios.post('/login');
+  return axios.post('/login', loginData);
 }
 
-function* login() {
+function* login(action) {
   // 실제 어떻게 동작할지 작성
   try {
     // yield fork(logger); // fork는 비동기 요청. logger는 내 기록을 로깅하는 함수. 10초 걸림
-    // yield call(loginAPI); // call은 동기 요청
-    yield delay(2000); // 2초 딜레이
+    yield call(loginAPI, action.data); // call은 동기 요청
     yield put({
       //put은 dispatch와 동일
       type: LOG_IN_SUCCESS,
@@ -46,16 +45,15 @@ function* watchLogin() {
   yield takeEvery(LOG_IN_REQUEST, login);
 }
 
-function signUpAPI() {
+function signUpAPI(signUpData) {
   // 서버에 요청을 보내는 부분
-  return axios.post('/signup');
+  return axios.post('http://localhost:3065/api/user/', signUpData);
 }
 
-function* signUp() {
+function* signUp(action) {
   try {
     // yield call(signUpAPI);
-    yield delay(2000);
-    throw new Error('에러에러에러에러이레어레어레어레어ㅔ네');
+    yield call(signUpAPI, action.data);
     yield put({
       type: SIGN_UP_SUCCESS,
     });
