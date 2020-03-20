@@ -26,11 +26,6 @@ const AppLayout = ({ children }) => {
           <Input.Search style={{ verticalAlign: 'middle' }} enterButton />
         </Menu.Item>
       </Menu>
-      <Button>
-        <Link href='/signup'>
-          <a>회원가입</a>
-        </Link>
-      </Button>
       <Row gutter={8}>
         <Col xs={24} md={6}>
           {isLoggedIn ? <UserProfile /> : <LoginForm />}

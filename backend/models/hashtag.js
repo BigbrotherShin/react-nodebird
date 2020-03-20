@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Hashtag.associate = db => {
     // through 를 통해 관계 테이블 생성
-    db.Hashtag.belongsToMay(db.Post, { through: 'PostHashtag' }); // m:n 관계, Post 하나에 Hashtag가 여러개, Hashtag 하나에 Post가 여러개
+    db.Hashtag.belongsToMany(db.Post, { through: 'PostHashtag' }); // m:n 관계, Post 하나에 Hashtag가 여러개, Hashtag 하나에 Post가 여러개
   };
 
   return Hashtag;

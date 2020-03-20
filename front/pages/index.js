@@ -11,7 +11,7 @@ const Home = () => {
 
   return (
     <div>
-      {user ? <div>Login: {user.nickname}</div> : <div>Logout!!</div>}
+      {/* {user ? <div>Login: {user.nickname}</div> : <div>Logout!!</div>} */}
       {isLoggedIn && <PostForm />}
       {mainPosts.map((c, i) => {
         return <PostCard key={`posts${i}`} post={c} />;

@@ -14,6 +14,7 @@ export const initialState = {
   signedUp: false, // 회원가입 성공
   isSigningUp: false, // 회원가입 시도중
   signUpErrorReason: '', // 회원가입 실패 사유
+  logOutErrorReason: '',
   me: null, // 내 정보
   followingList: [], // 팔로잉 리스트
   followerList: [], // 팔로워 리스트
@@ -95,7 +96,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         isLoggingIn: false,
         isLoggedIn: true,
-        me: dummyUser,
+        me: action.data,
       };
     }
     case LOG_IN_FAILURE: {
@@ -110,8 +111,19 @@ const reducer = (state = initialState, action) => {
     case LOG_OUT_REQUEST: {
       return {
         ...state,
+      };
+    }
+    case LOG_OUT_SUCCESS: {
+      return {
+        ...state,
         isLoggedIn: false,
         me: null,
+      };
+    }
+    case LOG_OUT_FAILURE: {
+      return {
+        ...state,
+        logOutErrorReason: action.error,
       };
     }
     case SIGN_UP_REQUEST: {

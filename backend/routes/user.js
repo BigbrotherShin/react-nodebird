@@ -34,10 +34,17 @@ router.post('/', async (req, res, next) => {
 router.get('/:id', (req, res) => {
   // 남의 정보 가져오기 ex) /3
 });
-router.post('/logout', (req, res) => {});
-router.post('/login', (req, res) => {
+router.post('/logout', (req, res) => {
+  // /api/user/logout
+  req.logout();
+  req.session.destroy();
+  res.status(200).send('로그아웃 성공');
+});
+
+router.post('/login', (req, res, next) => {
   // POST /api/user/login
   passport.authenticate('local', (err, user, info) => {
+    // (err, user, info) 는 passport의 done(err, data, logicErr) 세 가지 인자
     if (err) {
       // 서버에 에러가 있는 경우
       console.error(err);
@@ -47,13 +54,42 @@ router.post('/login', (req, res) => {
       // 로직 상 에러가 있는 경우
       return res.status(401).send(info.reason);
     }
-    return req.login(user, loginErr => {
-      if (loginErr) {
-        return next(loginErr);
+    return req.login(user, async loginErr => {
+      try {
+        if (loginErr) {
+          return next(loginErr);
+        }
+        const fullUser = await db.User.findOne({
+          where: { id: user.id },
+          include: [
+            {
+              model: db.Post,
+              as: 'Posts',
+              attributes: ['id'],
+            },
+            {
+              model: db.User,
+              as: 'Followers',
+              attributes: ['id'],
+            },
+            {
+              model: db.User,
+              as: 'Followings',
+              attributes: ['id'],
+            },
+          ],
+          attributes: ['id', 'nickname', 'userId'],
+        });
+
+        // const filteredUser = Object.assign({}, user.toJSON());
+        // user 객체는 sequelize 객체이기 때문에 순수한 JSON으로 만들기 위해 user.toJSON()
+        // user.toJSON() 하지 않으면 에러 발생
+        // delete filteredUser.password;
+        console.log(fullUser);
+        return res.status(200).json(fullUser); // 프론트에서 result.data로 조회 가능
+      } catch (e) {
+        next(e);
       }
-      const filteredUser = Object.assign({}, user);
-      delete filteredUser.password;
-      return res.json(filteredUser);
     });
   })(req, res, next);
 });
