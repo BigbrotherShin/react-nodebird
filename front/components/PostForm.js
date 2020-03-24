@@ -18,13 +18,16 @@ const PostForm = () => {
   );
 
   const onSubmitForm = useCallback(() => {
+    if (!text || !text.trim()) {
+      return alert('게시글은 한 글자 이상이어야 합니다.');
+    }
     dispatch({
       type: ADD_POST_REQUEST,
       data: {
-        text,
+        content: text,
       },
     });
-  }, []);
+  }, [text]);
 
   useEffect(() => {
     setText('');

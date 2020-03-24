@@ -9,6 +9,7 @@ import {
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { ADD_COMMENT_REQUEST } from '../reducers/post';
+import Link from 'next/link';
 
 const PostCard = ({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
@@ -53,7 +54,7 @@ const PostCard = ({ post }) => {
           <HeartOutlined key='heart' />,
           <span>
             <MessageOutlined key='message' onClick={toggleComment} />
-            {post.comments.length}
+            {post.Comments.length}
           </span>,
           <EllipsisOutlined key='ellipsis' />,
         ]}
@@ -62,7 +63,21 @@ const PostCard = ({ post }) => {
         <Card.Meta
           avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
           title={post.User.nickname}
-          description={post.content}
+          description={
+            // React에서 Hashtag에 링크 설정하는 방법
+            <div>
+              {post.content.split(/(#[^\s]+)/g).map(v => {
+                if (v.match(/(#[^\s]+)/g)) {
+                  return (
+                    <Link href={`/hashtag/${v.slice(1)}`} key={v}>
+                      <a>{v}</a>
+                    </Link>
+                  );
+                }
+                return v;
+              })}
+            </div>
+          } // a tag x -> Next Link
         />
       </Card>
       {commentFormOpened && (
@@ -80,9 +95,9 @@ const PostCard = ({ post }) => {
             </Button>
           </Form>
           <List
-            header={`${post.comments ? post.comments.length : 0} 댓글`}
+            header={`${post.Comments ? post.Comments.length : 0} 댓글`}
             itemLayout='horizontal'
-            dataSource={post.comments || []}
+            dataSource={post.Comments || []}
             renderItem={item => (
               <List.Item>
                 <Comment

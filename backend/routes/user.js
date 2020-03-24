@@ -5,7 +5,12 @@ const db = require('../models');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {});
+router.get('/', (req, res) => {
+  if (!req.user) {
+    res.status(401).send('로그인이 필요합니다.');
+  }
+  res.status(200).json(req.user); // passport.deserializeUser를 통한 req.user 데이터
+});
 router.post('/', async (req, res, next) => {
   // POST /api/user 회원가입
   try {
@@ -64,7 +69,7 @@ router.post('/login', (req, res, next) => {
           include: [
             {
               model: db.Post,
-              as: 'Posts',
+              as: 'Posts', // modeld의 as와 이름이 같게
               attributes: ['id'],
             },
             {

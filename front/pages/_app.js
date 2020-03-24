@@ -63,4 +63,13 @@ NodeBird.propTypes = {
   store: PropTypes.object.isRequired,
 };
 
+NodeBird.getInitialProps = async context => {
+  console.log('CONTEXT', context);
+  const { ctx, Component } = context; // next에서 넣어주는 context
+  let pageProps = {};
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx);
+  }
+};
+
 export default withRedux(makeStore)(NodeBird);

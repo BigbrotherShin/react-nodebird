@@ -3,18 +3,25 @@ import React, { useEffect } from 'react';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
 import { useDispatch, useSelector } from 'react-redux';
+import { LOAD_MAIN_POSTS_REQUEST } from '../reducers/post';
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { isLoggedIn, user } = useSelector(state => state.user);
+  const { me, isLoggedIn } = useSelector(state => state.user);
   const { mainPosts } = useSelector(state => state.post);
+
+  useEffect(() => {
+    dispatch({
+      type: LOAD_MAIN_POSTS_REQUEST,
+    });
+  }, []);
 
   return (
     <div>
       {/* {user ? <div>Login: {user.nickname}</div> : <div>Logout!!</div>} */}
       {isLoggedIn && <PostForm />}
-      {mainPosts.map((c, i) => {
-        return <PostCard key={`posts${i}`} post={c} />;
+      {mainPosts.map((p, i) => {
+        return <PostCard key={`posts${i}`} post={p} />;
       })}
     </div>
   );

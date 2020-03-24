@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Button } from 'antd';
 
-const NicknameEditForm = ({ dummyProfile }) => {
+const NicknameEditForm = ({ me }) => {
   return (
     <Form
       style={{
@@ -10,7 +10,7 @@ const NicknameEditForm = ({ dummyProfile }) => {
         padding: '20px',
       }}
     >
-      <Input addonBefore='닉네임' value={dummyProfile.name} />
+      <Input addonBefore='닉네임' value={me.nickname} />
       <Button type='primary'>수정</Button>
     </Form>
   );

@@ -1,48 +1,49 @@
 export const initialState = {
   mainPosts: [
-    {
-      id: 1,
-      User: {
-        id: 1,
-        nickname: '신주현',
-      },
-      content: 'dummyPost',
-      img:
-        'https://pbs.twimg.com/profile_images/876741994877304832/Y90mfYPD_400x400.jpg',
-      comments: [],
-    },
+    // {
+    //   id: 1,
+    //   User: {
+    //     id: 1,
+    //     nickname: '신주현',
+    //   },
+    //   content: 'dummyPost',
+    //   img:
+    //     'https://pbs.twimg.com/profile_images/876741994877304832/Y90mfYPD_400x400.jpg',
+    //   comments: [],
+    // },
   ], // 화면에 포일 포스트들
   imagePaths: [], // 미리보기 이미지 경로
-  addPostErrorReason: false, // 포스트 업로드 실패 사유
+  addPostErrorReason: '', // 포스트 업로드 실패 사유
   isAddingPost: false, // 포스트 업로드 중
   postAdded: false, // 포스트 업로드 성공
   isAddingComment: false,
   addCommentErrorReason: '',
   commentAdded: false,
+  loadPostsErrorReason: '',
 };
 
-const dummyPost = {
-  User: {
-    id: 2,
-    nickname: '터미네이터',
-  },
-  content: '터미네이터 윌 비 백',
-  comments: [],
-};
+// const dummyPost = {
+//   User: {
+//     id: 2,
+//     nickname: '터미네이터',
+//   },
+//   content: '터미네이터 윌 비 백',
+//   comments: [],
+// };
 
-const dummyComment = {
-  User: {
-    id: 3,
-    nickname: '윤원경',
-  },
-  // createdAt: new Date(),
-  content: '더미 댓글',
-  id: 1,
-};
+// const dummyComment = {
+//   User: {
+//     id: 3,
+//     nickname: '윤원경',
+//   },
+//   // createdAt: new Date(),
+//   content: '더미 댓글',
+//   id: 1,
+// };
 
-export const LOAD_MAIN_POST_REQUEST = 'LOAD_MAIN_POST_REQUEST';
-export const LOAD_MAIN_POST_SUCCESS = 'LOAD_MAIN_POST_SUCCESS';
-export const LOAD_MAIN_POST_FAILURE = 'LOAD_MAIN_POST_FAILURE';
+export const LOAD_MAIN_POSTS_REQUEST = 'LOAD_MAIN_POSTS_REQUEST';
+export const LOAD_MAIN_POSTS_SUCCESS = 'LOAD_MAIN_POSTS_SUCCESS';
+export const LOAD_MAIN_POSTS_FAILURE = 'LOAD_MAIN_POSTS_FAILURE';
 
 export const LOAD_HASHTAG_POSTS_REQUEST = 'LOAD_HASHTAG_POSTS_REQUEST';
 export const LOAD_HASHTAG_POSTS_SUCCESS = 'LOAD_HASHTAG_POSTS_SUCCESS';
@@ -114,7 +115,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isAddingPost: false,
-        mainPosts: [dummyPost, ...state.mainPosts],
+        mainPosts: [action.data, ...state.mainPosts],
         postAdded: true,
       };
     }
@@ -153,6 +154,24 @@ const reducer = (state = initialState, action) => {
         ...state,
         isAddingComment: false,
         addCommentErrorReason: action.error,
+      };
+    }
+    case LOAD_MAIN_POSTS_REQUEST: {
+      return {
+        ...state,
+        mainPosts: [],
+      };
+    }
+    case LOAD_MAIN_POSTS_SUCCESS: {
+      return {
+        ...state,
+        mainPosts: action.data,
+      };
+    }
+    case LOAD_MAIN_POSTS_FAILURE: {
+      return {
+        ...state,
+        loadPostsErrorReason: action.error,
       };
     }
     default:

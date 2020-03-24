@@ -15,6 +15,24 @@ module.exports = () => {
       const user = await db.User.findOne({
         // 프론트에서 cookie를 보내면, 서버는 메모리에서 cookie와 관련된 id를 찾은 뒤 DB에서 user 정보를 불러옴.
         where: { id },
+        include: [
+          {
+            model: db.Post,
+            as: 'Posts',
+            attributes: ['id'],
+          },
+          {
+            model: db.User,
+            as: 'Followers',
+            attributes: ['id'],
+          },
+          {
+            model: db.User,
+            as: 'Followings',
+            attributes: ['id'],
+          },
+        ],
+        attributes: ['id', 'nickname', 'userId'],
       });
       return done(null, user); // 불러온 user 정보는 req.user에 저장. route에서 req.user 사용 가능
     } catch (e) {

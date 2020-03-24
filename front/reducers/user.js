@@ -18,7 +18,8 @@ export const initialState = {
   me: null, // 내 정보
   followingList: [], // 팔로잉 리스트
   followerList: [], // 팔로워 리스트
-  userInfo: null, // 남의 정보
+  userInfo: null, // 남의 정보,
+  loadErrorReason: '',
 };
 
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST'; // 액션의 이름
@@ -94,8 +95,8 @@ const reducer = (state = initialState, action) => {
     case LOG_IN_SUCCESS: {
       return {
         ...state,
-        isLoggingIn: false,
         isLoggedIn: true,
+        isLoggingIn: false,
         me: action.data,
       };
     }
@@ -103,7 +104,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isLoggingIn: false,
-        isLoggedIn: false,
         logInErrorReason: action.error,
         me: null,
       };
@@ -111,18 +111,21 @@ const reducer = (state = initialState, action) => {
     case LOG_OUT_REQUEST: {
       return {
         ...state,
+        isLoggingOut: true,
       };
     }
     case LOG_OUT_SUCCESS: {
       return {
         ...state,
         isLoggedIn: false,
+        isLoggingOut: false,
         me: null,
       };
     }
     case LOG_OUT_FAILURE: {
       return {
         ...state,
+        isLoggingOut: false,
         logOutErrorReason: action.error,
       };
     }
@@ -147,6 +150,24 @@ const reducer = (state = initialState, action) => {
         signedUp: false,
         isSigningUp: false,
         signUpErrorReason: action.error,
+      };
+    }
+    case LOAD_USER_REQUEST: {
+      return {
+        ...state,
+      };
+    }
+    case LOAD_USER_SUCCESS: {
+      return {
+        ...state,
+        isLoggedIn: true,
+        me: action.data,
+      };
+    }
+    case LOAD_USER_FAILURE: {
+      return {
+        ...state,
+        loadErrorReason: action.error,
       };
     }
     default:

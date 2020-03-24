@@ -18,6 +18,9 @@ import {
   LOG_OUT_REQUEST,
   LOG_OUT_FAILURE,
   LOG_OUT_SUCCESS,
+  LOAD_USER_SUCCESS,
+  LOAD_USER_FAILURE,
+  LOAD_USER_REQUEST,
 } from '../reducers/user';
 import axios from 'axios';
 
@@ -39,14 +42,13 @@ function* login(action) {
     yield put({
       //put은 dispatch와 동일
       type: LOG_IN_SUCCESS,
-      data: result.data, // 서버에서 보내준 filteredUser 객체
+      data: result.data, // 서버에서 보내준 fullUser 객체
     });
   } catch (e) {
     console.error(e); // loginAPI 실패
     yield put({
       type: LOG_IN_FAILURE,
       error: e,
-      ㄹ,
     });
   }
 }
@@ -56,7 +58,13 @@ function* watchLogin() {
 }
 
 function logoutAPI() {
-  axios.post('/user/logout');
+  axios.post(
+    '/user/logout',
+    {},
+    {
+      withCredentials: true,
+    },
+  );
 }
 
 function* logout() {
@@ -76,6 +84,33 @@ function* logout() {
 
 function* watchLogout() {
   yield takeEvery(LOG_OUT_REQUEST, logout);
+}
+
+function loadUserAPI() {
+  // 서버에 요청을 보내는 부분
+  return axios.get('/user/', {
+    withCredentials: true,
+  });
+}
+
+function* loadUser() {
+  try {
+    const result = yield call(loadUserAPI);
+    yield put({
+      type: LOAD_USER_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) {
+    yield put({
+      type: LOAD_USER_FAILURE,
+      error: e,
+    });
+    console.error(e);
+  }
+}
+
+function* watchLoadUser() {
+  yield takeEvery(LOAD_USER_REQUEST, loadUser);
 }
 
 function signUpAPI(signUpData) {
@@ -103,5 +138,10 @@ function* watchSignUp() {
 }
 
 export default function* userSaga() {
-  yield all([fork(watchLogin), fork(watchLogout), fork(watchSignUp)]);
+  yield all([
+    fork(watchLogin),
+    fork(watchLogout),
+    fork(watchLoadUser),
+    fork(watchSignUp),
+  ]);
 }
