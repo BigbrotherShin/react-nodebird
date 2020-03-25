@@ -33,6 +33,7 @@ app.prepare().then(() => {
   );
 
   server.get('/hashtag/:tag', (req, res) => {
+    // '/hashtag' 페이지를 보여줌
     return app.render(req, res, '/hashtag', { tag: req.params.tag });
   });
 

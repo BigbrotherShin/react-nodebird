@@ -158,11 +158,19 @@ const reducer = (state = initialState, action) => {
       };
     }
     case LOAD_USER_SUCCESS: {
-      return {
-        ...state,
-        isLoggedIn: true,
-        me: action.data,
-      };
+      if (action.otherUserInfo) {
+        return {
+          ...state,
+          isLoggedIn: true,
+          userInfo: action.data,
+        };
+      } else {
+        return {
+          ...state,
+          isLoggedIn: true,
+          me: action.data,
+        };
+      }
     }
     case LOAD_USER_FAILURE: {
       return {

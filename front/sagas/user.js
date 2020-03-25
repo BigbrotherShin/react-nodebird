@@ -23,6 +23,7 @@ import {
   LOAD_USER_REQUEST,
 } from '../reducers/user';
 import axios from 'axios';
+import { REMOVE_POST_FAILURE } from '../reducers/post';
 
 axios.defaults.baseURL = 'http://localhost:3065/api';
 
@@ -86,20 +87,33 @@ function* watchLogout() {
   yield takeEvery(LOG_OUT_REQUEST, logout);
 }
 
-function loadUserAPI() {
+function loadUserAPI(actionData) {
   // 서버에 요청을 보내는 부분
+  if (actionData) {
+    // 게시글 글쓴이 정보 요청
+    return axios.get(`/user/${actionData}`, actionData);
+  }
   return axios.get('/user/', {
     withCredentials: true,
   });
 }
 
-function* loadUser() {
+function* loadUser(action) {
   try {
-    const result = yield call(loadUserAPI);
-    yield put({
-      type: LOAD_USER_SUCCESS,
-      data: result.data,
-    });
+    const result = yield call(loadUserAPI, action.data);
+    if (action.data) {
+      yield put({
+        type: LOAD_USER_SUCCESS,
+        data: result.data,
+        otherUserInfo: true,
+      });
+    } else {
+      yield put({
+        type: LOAD_USER_SUCCESS,
+        data: result.data,
+        otherUserInfo: false,
+      });
+    }
   } catch (e) {
     yield put({
       type: LOAD_USER_FAILURE,

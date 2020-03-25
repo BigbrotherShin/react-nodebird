@@ -61,8 +61,18 @@ const PostCard = ({ post }) => {
         extra={<Button>팔로우</Button>}
       >
         <Card.Meta
-          avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
-          title={post.User.nickname}
+          avatar={
+            <Link href={`/user/[id]`} as={`/user/${post.User.id}`}>
+              <a>
+                <Avatar>{post.User.nickname[0]}</Avatar>
+              </a>
+            </Link>
+          }
+          title={
+            <Link href={`/user/[id]`} as={`/user/${post.User.id}`}>
+              <a>{post.User.nickname}</a>
+            </Link>
+          }
           description={
             // React에서 Hashtag에 링크 설정하는 방법
             <div>
@@ -120,7 +130,7 @@ PostCard.propTypes = {
     User: PropTypes.object,
     content: PropTypes.string,
     img: PropTypes.string,
-    createdAt: PropTypes.object,
+    createdAt: PropTypes.string,
     comments: PropTypes.array,
   }),
 };

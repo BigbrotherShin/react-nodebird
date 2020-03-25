@@ -59,8 +59,8 @@ function NodeBird({ Component, pageProps, store }) {
 
 NodeBird.propTypes = {
   Component: PropTypes.elementType.isRequired,
-  // pageProps: PropTypes.object.isRequired,
   store: PropTypes.object.isRequired,
+  pageProps: PropTypes.object.isRequired,
 };
 
 NodeBird.getInitialProps = async context => {
@@ -68,8 +68,10 @@ NodeBird.getInitialProps = async context => {
   const { ctx, Component } = context; // next에서 넣어주는 context
   let pageProps = {};
   if (Component.getInitialProps) {
+    // Component (pages 폴더에 있는 컴포넌트)에 getInitialProps가 있다면
     pageProps = await Component.getInitialProps(ctx);
   }
+  return { pageProps };
 };
 
 export default withRedux(makeStore)(NodeBird);

@@ -36,9 +36,55 @@ router.post('/', async (req, res, next) => {
     return next(e);
   }
 });
-router.get('/:id', (req, res) => {
+
+router.get('/:id', async (req, res, next) => {
   // 남의 정보 가져오기 ex) /3
+  try {
+    // console.log('!!!params!!!!!', req.params);
+    const userInfo = await db.User.findOne({
+      where: {
+        id: req.params.id,
+      },
+      include: [
+        {
+          model: db.Post,
+          as: 'Posts',
+          attributes: ['id'],
+        },
+        {
+          model: db.User,
+          as: 'Followers',
+          attributes: ['id'],
+        },
+        {
+          model: db.User,
+          as: 'Followings',
+          attributes: ['id'],
+        },
+      ],
+      attributes: ['id', 'nickname', 'userId'],
+    });
+    // const userPosts = await userInfo.getPosts({
+    //   include: [
+    //     {
+    //       model: db.Comment,
+    //       include: [
+    //         {
+    //           model: db.User,
+    //           attributes: ['id', 'nickname'],
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // });
+    // console.log('USER POSTS!!: ', userPosts);
+    res.status(200).json(userInfo);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 });
+
 router.post('/logout', (req, res) => {
   // /api/user/logout
   req.logout();
