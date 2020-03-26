@@ -87,33 +87,21 @@ function* watchLogout() {
   yield takeEvery(LOG_OUT_REQUEST, logout);
 }
 
-function loadUserAPI(actionData) {
+function loadUserAPI(userId) {
   // 서버에 요청을 보내는 부분
-  if (actionData) {
-    // 게시글 글쓴이 정보 요청
-    return axios.get(`/user/${actionData}`, actionData);
-  }
-  return axios.get('/user/', {
-    withCredentials: true,
+  return axios.get(userId ? `/user/${userId}` : '/user/', {
+    withCredentials: userId ? false : true,
   });
 }
 
 function* loadUser(action) {
   try {
     const result = yield call(loadUserAPI, action.data);
-    if (action.data) {
-      yield put({
-        type: LOAD_USER_SUCCESS,
-        data: result.data,
-        otherUserInfo: true,
-      });
-    } else {
-      yield put({
-        type: LOAD_USER_SUCCESS,
-        data: result.data,
-        otherUserInfo: false,
-      });
-    }
+    yield put({
+      type: LOAD_USER_SUCCESS,
+      data: result.data,
+      me: !action.data,
+    });
   } catch (e) {
     yield put({
       type: LOAD_USER_FAILURE,

@@ -158,19 +158,18 @@ const reducer = (state = initialState, action) => {
       };
     }
     case LOAD_USER_SUCCESS: {
-      if (action.otherUserInfo) {
-        return {
-          ...state,
-          isLoggedIn: true,
-          userInfo: action.data,
-        };
-      } else {
+      if (action.me) {
         return {
           ...state,
           isLoggedIn: true,
           me: action.data,
         };
       }
+      return {
+        ...state,
+        isLoggedIn: true,
+        userInfo: action.data,
+      };
     }
     case LOAD_USER_FAILURE: {
       return {

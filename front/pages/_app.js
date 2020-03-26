@@ -64,7 +64,7 @@ NodeBird.propTypes = {
 };
 
 NodeBird.getInitialProps = async context => {
-  console.log('CONTEXT', context);
+  // console.log('CONTEXT', context);
   const { ctx, Component } = context; // next에서 넣어주는 context
   let pageProps = {};
   if (Component.getInitialProps) {

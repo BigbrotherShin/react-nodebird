@@ -10,7 +10,8 @@ const dummyProfile = {
 
 const Profile = () => {
   const { me } = useSelector(state => state.user);
-  return (
+
+  return me ? (
     <div>
       <NicknameEditForm me={me} />
       <List
@@ -20,7 +21,7 @@ const Profile = () => {
         header={<div>팔로워 목록</div>}
         loadMore={<Button style={{ width: '100%' }}>더 보기</Button>}
         bordered
-        dataSource={me.Follwers}
+        dataSource={me.Followers}
         renderItem={item => (
           <List.Item style={{ maginTop: '20px' }}>
             <Card actions={[<StopOutlined key='stop' />]}>
@@ -46,6 +47,8 @@ const Profile = () => {
         )}
       />
     </div>
+  ) : (
+    <div>로그인이 되어있지 않습니다.</div>
   );
 };
 

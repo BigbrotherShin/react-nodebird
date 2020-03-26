@@ -15,6 +15,9 @@ import {
   LOAD_USER_POSTS_REQUEST,
   LOAD_USER_POSTS_SUCCESS,
   LOAD_USER_POSTS_FAILURE,
+  LOAD_COMMENTS_SUCCESS,
+  LOAD_COMMENTS_FAILURE,
+  LOAD_COMMENTS_REQUEST,
 } from '../reducers/post';
 
 import Axios from 'axios';
@@ -71,15 +74,26 @@ function* watchLoadMainPosts() {
   yield takeLatest(LOAD_MAIN_POSTS_REQUEST, loadMainPosts);
 }
 
-function addCommentAPI() {}
+function addCommentAPI(commentData) {
+  return Axios.post(
+    `/post/${commentData.postId}/comment`,
+    {
+      content: commentData.content,
+    },
+    {
+      withCredentials: true,
+    },
+  );
+}
 
 function* addComment(action) {
   try {
-    yield delay(2000);
+    const result = yield call(addCommentAPI, action.data);
     yield put({
       type: ADD_COMMENT_SUCCESS,
       data: {
         postId: action.data.postId, // SUCCESS에 대한 action
+        comment: result.data,
       },
     });
   } catch (e) {
@@ -95,8 +109,35 @@ function* watchAddComment() {
   yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
 
+function loadCommentsAPI(postId) {
+  return Axios.get(`/post/${postId}/comments`);
+}
+
+function* loadComments(action) {
+  try {
+    const result = yield call(loadCommentsAPI, action.data);
+    yield put({
+      type: LOAD_COMMENTS_SUCCESS,
+      data: {
+        postId: action.data,
+        comments: result.data,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+    yield put({
+      type: LOAD_COMMENTS_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchLoadComments() {
+  yield takeLatest(LOAD_COMMENTS_REQUEST, loadComments);
+}
+
 function loadHashtagPostsAPI(actionData) {
-  return Axios.post(`/posts/hashtag/${actionData}`, { tag: actionData });
+  return Axios.get(`/hashtag/${actionData}`);
 }
 
 function* loadHashtagPosts(action) {
@@ -120,7 +161,7 @@ function* watchLoadHashtagPosts() {
 }
 
 function loadUserPostsAPI(actionData) {
-  return Axios.post(`/posts/user/${actionData}`, { id: actionData });
+  return Axios.get(`/user/${actionData}/posts`);
 }
 
 function* loadUserPosts(action) {
@@ -147,6 +188,7 @@ export default function* postSaga() {
   yield all([
     fork(watchAddPost),
     fork(watchLoadMainPosts),
+    fork(watchLoadComments),
     fork(watchAddComment),
     fork(watchLoadHashtagPosts),
     fork(watchLoadUserPosts),

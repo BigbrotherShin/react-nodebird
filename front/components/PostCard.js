@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { ADD_COMMENT_REQUEST } from '../reducers/post';
+import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST } from '../reducers/post';
 import Link from 'next/link';
 
 const PostCard = ({ post }) => {
@@ -26,7 +26,13 @@ const PostCard = ({ post }) => {
 
   const toggleComment = useCallback(() => {
     setCommentFormOpened(prev => !prev);
-  }, []);
+    if (!commentFormOpened) {
+      dispatch({
+        type: LOAD_COMMENTS_REQUEST,
+        data: post.id,
+      });
+    }
+  }, [commentFormOpened]);
 
   const onChangeCommentText = useCallback(e => {
     setCommentText(e.target.value);
@@ -40,9 +46,10 @@ const PostCard = ({ post }) => {
       type: ADD_COMMENT_REQUEST,
       data: {
         postId: post.id,
+        content: commentText,
       },
     });
-  }, [me && me.id]);
+  }, [me && me.id, commentText]);
 
   return (
     <div>
@@ -62,15 +69,21 @@ const PostCard = ({ post }) => {
       >
         <Card.Meta
           avatar={
-            <Link href={`/user/[id]`} as={`/user/${post.User.id}`}>
+            <Link
+              href={{ pathname: '/user', query: { id: post.User.id } }}
+              as={`/user/${post.User.id}`}
+            >
               <a>
                 <Avatar>{post.User.nickname[0]}</Avatar>
               </a>
             </Link>
           }
           title={
-            <Link href={`/user/[id]`} as={`/user/${post.User.id}`}>
-              <a>{post.User.nickname}</a>
+            <Link
+              href={{ pathname: '/user', query: { id: post.User.id } }}
+              as={`/user/${post.User.id}`}
+            >
+              <a style={{ color: '#7F7C7C' }}>{post.User.nickname}</a>
             </Link>
           }
           description={
@@ -79,7 +92,14 @@ const PostCard = ({ post }) => {
               {post.content.split(/(#[^\s]+)/g).map(v => {
                 if (v.match(/(#[^\s]+)/g)) {
                   return (
-                    <Link href={`/hashtag/${v.slice(1)}`} key={v}>
+                    <Link
+                      href={{
+                        pathname: '/hashtag',
+                        query: { tag: v.slice(1) },
+                      }}
+                      as={`/hashtag/${v.slice(1)}`}
+                      key={v}
+                    >
                       <a>{v}</a>
                     </Link>
                   );
@@ -112,7 +132,16 @@ const PostCard = ({ post }) => {
               <List.Item>
                 <Comment
                   author={item.User.nickname}
-                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                  avatar={
+                    <Link
+                      href={{ pathname: '/user', query: { id: item.User.id } }}
+                      as={`/user/${item.User.id}`}
+                    >
+                      <a>
+                        <Avatar>{item.User.nickname[0]}</Avatar>
+                      </a>
+                    </Link>
+                  }
                   content={item.content}
                   // datetime={item.createdAt}
                 />

@@ -30,17 +30,17 @@ const User = ({ id }) => {
             <div key='twit'>
               쨱쨱
               <br />
-              {mainPosts.length}
+              {userInfo.Posts}
             </div>,
             <div key='following'>
               팔로잉
               <br />
-              {userInfo.Followings.length}
+              {userInfo.Followings}
             </div>,
             <div key='follower'>
               팔로워
               <br />
-              {userInfo.Followers.length}
+              {userInfo.Followers}
             </div>,
           ]}
         >
@@ -62,7 +62,7 @@ User.propTypes = {
 };
 
 User.getInitialProps = async context => {
-  console.log('User getInitialProps: ', context.query.id);
+  // console.log('User getInitialProps: ', context.query.id);
   return { id: parseInt(context.query.id, 10) };
 };
 

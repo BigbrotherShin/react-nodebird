@@ -28,7 +28,7 @@ router.post('/', async (req, res, next) => {
       userId: req.body.userId,
       password: hashedPassword,
     });
-    console.log(newUser);
+    // console.log(newUser);
     return res.status(200).json(newUser);
   } catch (e) {
     console.error(e);
@@ -38,13 +38,10 @@ router.post('/', async (req, res, next) => {
 });
 
 router.get('/:id', async (req, res, next) => {
-  // 남의 정보 가져오기 ex) /3
   try {
-    // console.log('!!!params!!!!!', req.params);
     const userInfo = await db.User.findOne({
-      where: {
-        id: req.params.id,
-      },
+      where: { id: parseInt(req.params.id, 10) },
+      attributes: ['id', 'nickname'],
       include: [
         {
           model: db.Post,
@@ -62,23 +59,44 @@ router.get('/:id', async (req, res, next) => {
           attributes: ['id'],
         },
       ],
-      attributes: ['id', 'nickname', 'userId'],
     });
-    // const userPosts = await userInfo.getPosts({
-    //   include: [
-    //     {
-    //       model: db.Comment,
-    //       include: [
-    //         {
-    //           model: db.User,
-    //           attributes: ['id', 'nickname'],
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // });
-    // console.log('USER POSTS!!: ', userPosts);
-    res.status(200).json(userInfo);
+    const jsonUser = userInfo.toJSON(); // DB의 id를 지우기 위해 데이터 변경
+    jsonUser.Posts = jsonUser.Posts ? jsonUser.Posts.length : 0;
+    jsonUser.Followers = jsonUser.Followers ? jsonUser.Followers.length : 0;
+    jsonUser.Followings = jsonUser.Followings ? jsonUser.Followings.length : 0;
+    // console.log('JSON USER: ', jsonUser);
+    res.status(200).json(jsonUser);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+
+router.get('/:id/posts', async (req, res, next) => {
+  // GET /api/user/:id/posts
+  try {
+    // console.log('REQ!!!: ', req.body);
+    const userPosts = await db.Post.findAll({
+      where: { userId: parseInt(req.params.id, 10), RetweetId: null },
+      include: [
+        {
+          model: db.User,
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: db.Comment,
+          include: [
+            {
+              model: db.User,
+              attributes: ['id', 'nickname'],
+            },
+          ],
+        },
+      ],
+    });
+
+    // console.log('!!!user posts!!!: ', userPosts);
+    return res.status(200).json(userPosts);
   } catch (e) {
     console.error(e);
     next(e);
@@ -136,7 +154,7 @@ router.post('/login', (req, res, next) => {
         // user 객체는 sequelize 객체이기 때문에 순수한 JSON으로 만들기 위해 user.toJSON()
         // user.toJSON() 하지 않으면 에러 발생
         // delete filteredUser.password;
-        console.log(fullUser);
+        // console.log(fullUser);
         return res.status(200).json(fullUser); // 프론트에서 result.data로 조회 가능
       } catch (e) {
         next(e);
@@ -148,6 +166,5 @@ router.get('/:id/follow', (req, res) => {});
 router.post('/:id/follow', (req, res) => {});
 router.delete('/:id/follow', (req, res) => {});
 router.delete('/:id/follower', (req, res) => {});
-router.get('/:id/posts', (req, res) => {});
 
 module.exports = router;

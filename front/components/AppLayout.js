@@ -26,11 +26,13 @@ const AppLayout = ({ children }) => {
             <a>노드버드</a>
           </Link>
         </Menu.Item>
-        <Menu.Item key='profile'>
-          <Link href='/profile'>
-            <a>프로필</a>
-          </Link>
-        </Menu.Item>
+        {me ? (
+          <Menu.Item key='profile'>
+            <Link href='/profile'>
+              <a>프로필</a>
+            </Link>
+          </Menu.Item>
+        ) : null}
         <Menu.Item key='mail'>
           <Input.Search style={{ verticalAlign: 'middle' }} enterButton />
         </Menu.Item>

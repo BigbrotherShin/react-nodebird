@@ -3,11 +3,17 @@ const db = require('../models');
 
 const router = express.Router();
 
-router.get('/', async (req, res, next) => {
-  // GET /api/posts
+router.get('/:tag', async (req, res, next) => {
+  // POST /api/posts/hashtag/:tag
   try {
-    const posts = await db.Post.findAll({
+    // console.log('REQ!!!: ', req.body);
+    // console.log('PARAMS!!!!!: ', req.params);
+    const hashtagPosts = await db.Post.findAll({
       include: [
+        {
+          model: db.Hashtag,
+          where: { name: decodeURIComponent(req.params.tag) },
+        },
         {
           model: db.User,
           attributes: ['id', 'nickname'],
@@ -20,16 +26,12 @@ router.get('/', async (req, res, next) => {
               attributes: ['id', 'nickname'],
             },
           ],
-          attributes: ['id', 'content'],
         },
       ],
-      order: [
-        // Will escape title and validate DESC against a list of valid direction parameters
-        ['createdAt', 'DESC'], // DESC는 내림차순, ASC는 오름차순(default)
-      ],
     });
-    // console.log('POSTS: ', posts);
-    return res.status(200).json(posts);
+
+    // console.log('!!!hashtag posts!!!: ', hashtagPosts);
+    return res.status(200).json(hashtagPosts);
   } catch (e) {
     console.error(e);
     next(e);
