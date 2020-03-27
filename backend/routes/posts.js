@@ -13,14 +13,7 @@ router.get('/', async (req, res, next) => {
           attributes: ['id', 'nickname'],
         },
         {
-          model: db.Comment,
-          include: [
-            {
-              model: db.User,
-              attributes: ['id', 'nickname'],
-            },
-          ],
-          attributes: ['id', 'content'],
+          model: db.Image,
         },
       ],
       order: [

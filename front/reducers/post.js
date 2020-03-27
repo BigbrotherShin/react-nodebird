@@ -9,7 +9,7 @@ export const initialState = {
     //   content: 'dummyPost',
     //   img:
     //     'https://pbs.twimg.com/profile_images/876741994877304832/Y90mfYPD_400x400.jpg',
-    //   comments: [],
+    //   Comments: [],
     // },
   ], // 화면에 포일 포스트들
   imagePaths: [], // 미리보기 이미지 경로
@@ -20,6 +20,7 @@ export const initialState = {
   addCommentErrorReason: '',
   commentAdded: false,
   loadPostsErrorReason: '',
+  loadCommentsErrorReason: '',
 };
 
 // const dummyPost = {
@@ -117,6 +118,7 @@ const reducer = (state = initialState, action) => {
         isAddingPost: false,
         mainPosts: [action.data, ...state.mainPosts],
         postAdded: true,
+        imagePaths: [],
       };
     }
     case ADD_POST_FAILURE: {
@@ -124,6 +126,32 @@ const reducer = (state = initialState, action) => {
         ...state,
         isAddingPost: false,
         addPostErrorReason: action.error,
+      };
+    }
+    case LOAD_COMMENTS_REQUEST: {
+      return {
+        ...state,
+      };
+    }
+    case LOAD_COMMENTS_SUCCESS: {
+      const postIndex = state.mainPosts.findIndex(
+        v => v.id === action.data.postId,
+      );
+      const post = state.mainPosts[postIndex];
+      const comments = action.data.comments;
+      // console.log(comments);
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = { ...post, comments };
+      // console.log(mainPosts);
+      return {
+        ...state,
+        mainPosts,
+      };
+    }
+    case LOAD_COMMENTS_FAILURE: {
+      return {
+        ...state,
+        loadCommentsErrorReason: action.error,
       };
     }
     case ADD_COMMENT_REQUEST: {
@@ -156,6 +184,7 @@ const reducer = (state = initialState, action) => {
         addCommentErrorReason: action.error,
       };
     }
+
     case LOAD_MAIN_POSTS_REQUEST:
     case LOAD_HASHTAG_POSTS_REQUEST:
     case LOAD_USER_POSTS_REQUEST: {
@@ -177,6 +206,28 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         loadPostsErrorReason: action.error,
+      };
+    }
+    case UPLOAD_IMAGES_REQUEST: {
+      return {
+        ...state,
+      };
+    }
+    case UPLOAD_IMAGES_SUCCESS: {
+      return {
+        ...state,
+        imagePaths: [...state.imagePaths, ...action.data], // 이미지 미리보기 경로들
+      };
+    }
+    case UPLOAD_IMAGES_FAILURE: {
+      return {
+        ...state,
+      };
+    }
+    case REMOVE_IMAGE: {
+      return {
+        ...state,
+        imagePaths: state.imagePaths.filter((v, i) => i !== action.index),
       };
     }
     default:

@@ -23,7 +23,6 @@ import {
   LOAD_USER_REQUEST,
 } from '../reducers/user';
 import axios from 'axios';
-import { REMOVE_POST_FAILURE } from '../reducers/post';
 
 axios.defaults.baseURL = 'http://localhost:3065/api';
 

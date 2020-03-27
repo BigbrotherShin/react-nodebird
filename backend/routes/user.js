@@ -2,14 +2,16 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const db = require('../models');
+const { isLoggedIn } = require('./middleware');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  if (!req.user) {
-    res.status(401).send('로그인이 필요합니다.');
-  }
-  res.status(200).json(req.user); // passport.deserializeUser를 통한 req.user 데이터
+router.get('/', isLoggedIn, (req, res) => {
+  // /api/user
+  // const user = Object.assign({}, req.user.toJSON());
+  // delete user.password;
+
+  return res.status(200).json(req.user); // passport.deserializeUser를 통한 req.user 데이터
 });
 router.post('/', async (req, res, next) => {
   // POST /api/user 회원가입
@@ -84,13 +86,7 @@ router.get('/:id/posts', async (req, res, next) => {
           attributes: ['id', 'nickname'],
         },
         {
-          model: db.Comment,
-          include: [
-            {
-              model: db.User,
-              attributes: ['id', 'nickname'],
-            },
-          ],
+          model: db.Image,
         },
       ],
     });

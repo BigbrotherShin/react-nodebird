@@ -15,13 +15,16 @@ const PostCard = ({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
   const [commentText, setCommentText] = useState('');
   const { me } = useSelector(state => state.user);
-  const { commentAdded, isAddingComment } = useSelector(state => state.post);
+  const { commentAdded, isAddingComment, isLoadingComments } = useSelector(
+    state => state.post,
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (commentAdded) {
       setCommentText('');
     }
+    // console.log('POST:::', post);
   }, [commentAdded === true]);
 
   const toggleComment = useCallback(() => {
@@ -60,8 +63,12 @@ const PostCard = ({ post }) => {
           <RetweetOutlined key='retweet' />,
           <HeartOutlined key='heart' />,
           <span>
-            <MessageOutlined key='message' onClick={toggleComment} />
-            {post.Comments.length}
+            <MessageOutlined
+              key='message'
+              onClick={toggleComment}
+              loading={isLoadingComments}
+            />
+            {/* {post.Comments ? post.Comments.length : 0} */}
           </span>,
           <EllipsisOutlined key='ellipsis' />,
         ]}
@@ -125,9 +132,9 @@ const PostCard = ({ post }) => {
             </Button>
           </Form>
           <List
-            header={`${post.Comments ? post.Comments.length : 0} 댓글`}
+            header={`${post.comments ? post.comments.length : 0} 댓글`}
             itemLayout='horizontal'
-            dataSource={post.Comments || []}
+            dataSource={post.comments || []}
             renderItem={item => (
               <List.Item>
                 <Comment

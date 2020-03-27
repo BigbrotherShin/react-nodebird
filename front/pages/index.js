@@ -14,11 +14,12 @@ const Home = () => {
     dispatch({
       type: LOAD_MAIN_POSTS_REQUEST,
     });
+
+    // console.log('MAIN POSTS: ', mainPosts);
   }, []);
 
   return (
     <div>
-      {/* {user ? <div>Login: {user.nickname}</div> : <div>Logout!!</div>} */}
       {isLoggedIn && <PostForm />}
       {mainPosts.map((p, i) => {
         return <PostCard key={`posts${i}`} post={p} />;

@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
 const dotenv = require('dotenv');
 const passport = require('passport');
+const path = require('path');
 
 const passportConfig = require('./passport');
 const db = require('./models');
@@ -19,6 +20,7 @@ db.sequelize.sync();
 passportConfig();
 
 app.use(morgan('dev'));
+app.use('/', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
