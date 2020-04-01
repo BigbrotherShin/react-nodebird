@@ -14,9 +14,12 @@ import {
   LOAD_COMMENTS_REQUEST,
   UNLIKE_POST_REQUEST,
   LIKE_POST_REQUEST,
+  RETWEET_REQUEST,
 } from '../reducers/post';
 import Link from 'next/link';
 import PostImages from './PostImages';
+import PostCardContent from './PostCardContent';
+import { UNFOLLOW_USER_REQUEST, FOLLOW_USER_REQUEST } from '../reducers/user';
 
 const PostCard = ({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
@@ -69,18 +72,49 @@ const PostCard = ({ post }) => {
     }
     if (liked) {
       // 좋아요를 누른 상태
+      console.log('components/PostCard.js liked: ', liked);
       return dispatch({
         type: UNLIKE_POST_REQUEST,
         data: post.id,
       });
     } else {
       // 좋아요를 안 누른 상태
+      console.log('components/PostCard.js liked: ', liked);
       return dispatch({
         type: LIKE_POST_REQUEST,
         data: post.id,
       });
     }
+  }, [me && me.id, post && post.id, liked]);
+
+  const onRetweet = useCallback(() => {
+    if (!me) {
+      return alert('로그인이 필요합니다.');
+    }
+    return dispatch({
+      type: RETWEET_REQUEST,
+      data: post.id,
+    });
   }, [me && me.id, post && post.id]);
+
+  const onUnfollow = useCallback(
+    userId => () => {
+      dispatch({
+        type: UNFOLLOW_USER_REQUEST,
+        data: userId,
+      });
+    },
+    [],
+  );
+  const onFollow = useCallback(
+    userId => () => {
+      dispatch({
+        type: FOLLOW_USER_REQUEST,
+        data: userId,
+      });
+    },
+    [],
+  );
 
   return (
     <div>
@@ -88,9 +122,13 @@ const PostCard = ({ post }) => {
         key={+post.createdAt}
         cover={post.Images[0] && <PostImages images={post.Images} />}
         actions={[
-          <RetweetOutlined key='retweet' />,
+          <RetweetOutlined key='retweet' onClick={onRetweet} />,
           liked ? (
-            <HeartTwoTone twoToneColor='#eb2f96' onClick={onToggleLike} />
+            <HeartTwoTone
+              key='heart'
+              twoToneColor='#eb2f96'
+              onClick={onToggleLike}
+            />
           ) : (
             <HeartOutlined key='heart' onClick={onToggleLike} />
           ),
@@ -104,50 +142,80 @@ const PostCard = ({ post }) => {
           </span>,
           <EllipsisOutlined key='ellipsis' />,
         ]}
-        extra={<Button>팔로우</Button>}
+        title={
+          post.RetweetId ? `${post.User.nickname}님이 리트윗 하셨습니다.` : null
+        }
+        extra={
+          !me || post.User.id === me.id ? null : me.Followings &&
+            me.Followings.find(v => v.id === post.UserId) ? (
+            <Button onClick={onUnfollow(post.User.id)}>언팔로우</Button>
+          ) : (
+            <Button onClick={onFollow(post.User.id)}>팔로우</Button>
+          )
+        }
       >
-        <Card.Meta
-          avatar={
-            <Link
-              href={{ pathname: '/user', query: { id: post.User.id } }}
-              as={`/user/${post.User.id}`}
-            >
-              <a>
-                <Avatar>{post.User.nickname[0]}</Avatar>
-              </a>
-            </Link>
-          }
-          title={
-            <Link
-              href={{ pathname: '/user', query: { id: post.User.id } }}
-              as={`/user/${post.User.id}`}
-            >
-              <a style={{ color: '#7F7C7C' }}>{post.User.nickname}</a>
-            </Link>
-          }
-          description={
-            // React에서 Hashtag에 링크 설정하는 방법
-            <div>
-              {post.content.split(/(#[^\s]+)/g).map(v => {
-                if (v.match(/(#[^\s]+)/g)) {
-                  return (
-                    <Link
-                      href={{
-                        pathname: '/hashtag',
-                        query: { tag: v.slice(1) },
-                      }}
-                      as={`/hashtag/${v.slice(1)}`}
-                      key={v}
-                    >
-                      <a>{v}</a>
-                    </Link>
-                  );
-                }
-                return v;
-              })}
-            </div>
-          } // a tag x -> Next Link
-        />
+        {post.RetweetId && post.Retweet ? (
+          <Card
+            key={+post.Retweet.createdAt}
+            cover={
+              post.Retweet.Images[0] && (
+                <PostImages images={post.Retweet.Images} />
+              )
+            }
+          >
+            <Card.Meta
+              avatar={
+                <Link
+                  href={{
+                    pathname: '/user',
+                    query: { id: post.Retweet.User.id },
+                  }}
+                  as={`/user/${post.Retweet.User.id}`}
+                >
+                  <a>
+                    <Avatar>{post.Retweet.User.nickname[0]}</Avatar>
+                  </a>
+                </Link>
+              }
+              title={
+                <Link
+                  href={{
+                    pathname: '/user',
+                    query: { id: post.Retweet.User.id },
+                  }}
+                  as={`/user/${post.Retweet.User.id}`}
+                >
+                  <a style={{ color: '#7F7C7C' }}>
+                    {post.Retweet.User.nickname}
+                  </a>
+                </Link>
+              }
+              description={<PostCardContent postData={post.Retweet.content} />} // a tag x -> Next Link
+            />
+          </Card>
+        ) : (
+          <Card.Meta
+            avatar={
+              <Link
+                href={{ pathname: '/user', query: { id: post.User.id } }}
+                as={`/user/${post.User.id}`}
+              >
+                <a>
+                  <Avatar>{post.User.nickname[0]}</Avatar>
+                </a>
+              </Link>
+            }
+            title={
+              <Link
+                href={{ pathname: '/user', query: { id: post.User.id } }}
+                as={`/user/${post.User.id}`}
+              >
+                <a style={{ color: '#7F7C7C' }}>{post.User.nickname}</a>
+              </Link>
+            }
+            description={<PostCardContent postData={post.content} />} // a tag x -> Next Link
+          />
+        )}
       </Card>
       {commentFormOpened && (
         <>

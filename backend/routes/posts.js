@@ -21,6 +21,19 @@ router.get('/', async (req, res, next) => {
           as: 'Likers', // 프론트에 전달할 객체의 key
           attributes: ['id'],
         },
+        {
+          model: db.Post,
+          as: 'Retweet',
+          include: [
+            {
+              model: db.User,
+              attributes: ['id', 'nickname'],
+            },
+            {
+              model: db.Image,
+            },
+          ],
+        },
       ],
       order: [
         // Will escape title and validate DESC against a list of valid direction parameters

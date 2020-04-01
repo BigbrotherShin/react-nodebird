@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const db = require('../models');
-const { isLoggedIn } = require('./middleware');
+const { isLoggedIn, findUser } = require('./middleware');
 
 const router = express.Router();
 
@@ -164,9 +164,25 @@ router.post('/login', (req, res, next) => {
     });
   })(req, res, next);
 });
+router.post('/:id/follow', isLoggedIn, findUser, async (req, res, next) => {
+  try {
+    await req.findUser.addFollower(req.user.id);
+    res.send(req.params.id);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
 router.get('/:id/follow', (req, res) => {});
-router.post('/:id/follow', (req, res) => {});
-router.delete('/:id/follow', (req, res) => {});
+router.delete('/:id/follow', isLoggedIn, findUser, async (req, res, next) => {
+  try {
+    await req.findUser.removeFollower(req.user.id);
+    res.send(req.params.id);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
 router.delete('/:id/follower', (req, res) => {});
 
 module.exports = router;
