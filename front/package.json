@@ -23,7 +23,9 @@
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-modal": "^3.11.2",
     "react-redux": "^7.2.0",
+    "react-slick": "^0.25.2",
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3"
   },

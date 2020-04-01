@@ -38,7 +38,7 @@ function* login(action) {
   try {
     // yield fork(logger); // fork는 비동기 요청. logger는 내 기록을 로깅하는 함수. 10초 걸림
     const result = yield call(loginAPI, action.data); // call은 동기 요청
-    console.log(result.data);
+    // console.log(result.data);
     yield put({
       //put은 dispatch와 동일
       type: LOG_IN_SUCCESS,

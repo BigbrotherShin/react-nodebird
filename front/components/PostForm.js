@@ -33,6 +33,7 @@ const PostForm = () => {
       formData.append('image', i);
     });
     formData.append('content', text.trim());
+    // console.log('front/components/PostForm: ', formData);
     dispatch({
       type: ADD_POST_REQUEST,
       data: formData,

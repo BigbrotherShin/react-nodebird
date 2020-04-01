@@ -10,6 +10,7 @@ export const initialState = {
     //   img:
     //     'https://pbs.twimg.com/profile_images/876741994877304832/Y90mfYPD_400x400.jpg',
     //   Comments: [],
+    //   Likers: [],
     // },
   ], // 화면에 포일 포스트들
   imagePaths: [], // 미리보기 이미지 경로
@@ -21,6 +22,7 @@ export const initialState = {
   commentAdded: false,
   loadPostsErrorReason: '',
   loadCommentsErrorReason: '',
+  likePostErrorReason: '',
 };
 
 // const dummyPost = {
@@ -228,6 +230,53 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         imagePaths: state.imagePaths.filter((v, i) => i !== action.index),
+      };
+    }
+    case LIKE_POST_REQUEST: {
+      return {
+        ...state,
+      };
+    }
+    case LIKE_POST_SUCCESS: {
+      const postIndex = state.mainPosts.findIndex(
+        v => v.id === action.data.postId,
+      );
+      const post = state.mainPosts[postIndex];
+      const Likers = [{ id: action.data.userId }, ...post.Likers];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = { ...post, Likers };
+      return {
+        ...state,
+        mainPosts,
+      };
+    }
+    case LIKE_POST_FAILURE: {
+      return {
+        ...state,
+        likePostErrorReason: action.error,
+      };
+    }
+    case UNLIKE_POST_REQUEST: {
+      return {
+        ...state,
+      };
+    }
+    case UNLIKE_POST_SUCCESS: {
+      const postIndex = state.mainPosts.findIndex(
+        v => v.id === action.data.postId,
+      );
+      const post = state.mainPosts[postIndex];
+      const Likers = post.Likers.filter((v, i) => v.id !== action.data.userId);
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = { ...post, Likers };
+      return {
+        ...state,
+        mainPosts,
+      };
+    }
+    case UNLIKE_POST_FAILURE: {
+      return {
+        ...state,
       };
     }
     default:

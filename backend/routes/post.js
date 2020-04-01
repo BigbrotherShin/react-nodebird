@@ -49,10 +49,11 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
         }),
       );
       await newPost.addImages(images);
-    } else {
+    } else if (req.body.image) {
       // 이미지를 하나만 올리면 image: 주소1
+
       const image = await db.Image.create({ src: req.body.image });
-      await newPost.addImage(image);
+      await newPost.addImage(image); // DB에서 image를 post와 연결
     }
 
     // const User = await newPost.getUser();
@@ -145,6 +146,41 @@ router.post('/images', upload.array('image'), (req, res) => {
   // upload.none() 이미지나 파일을 안 올릴 때 -> req.body
 
   res.json(req.files.map(v => v.filename));
+});
+
+router.post('/:id/like', isLoggedIn, async (req, res, next) => {
+  try {
+    const post = await db.Post.findOne({
+      // 보안을 위해 게시글이 존재하는지부터 검사
+      where: { id: req.params.id },
+    });
+    if (!post) {
+      return res.status(404).send('포스트를 찾지 못했습니다.');
+    }
+    await post.addLiker(req.user.id);
+    res.json({ userId: req.user.id });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+
+router.delete('/:id/like', isLoggedIn, async (req, res, next) => {
+  try {
+    const post = await db.Post.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+    if (!post) {
+      return res.status(404).send('포스트를 찾지 못했습니다.');
+    }
+    await post.removeLiker(req.user.id);
+    res.json({ userId: req.user.id });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 });
 
 module.exports = router;

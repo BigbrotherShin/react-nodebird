@@ -21,6 +21,12 @@ import {
   UPLOAD_IMAGES_REQUEST,
   UPLOAD_IMAGES_SUCCESS,
   UPLOAD_IMAGES_FAILURE,
+  LIKE_POST_REQUEST,
+  LIKE_POST_SUCCESS,
+  LIKE_POST_FAILURE,
+  UNLIKE_POST_SUCCESS,
+  UNLIKE_POST_FAILURE,
+  UNLIKE_POST_REQUEST,
 } from '../reducers/post';
 
 import Axios from 'axios';
@@ -36,6 +42,7 @@ function addPostAPI(postData) {
 function* addPost(action) {
   try {
     const result = yield call(addPostAPI, action.data);
+    // console.log('front/sagas/post addPost: result.data', result.data);
     yield put({
       type: ADD_POST_SUCCESS,
       data: result.data,
@@ -214,6 +221,60 @@ function* watchUploadImages() {
   yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
 }
 
+function likePostAPI(likePostId) {
+  return Axios.post(`/post/${likePostId}/like`, {
+    withCredentials: true,
+  });
+}
+
+function* likePost(action) {
+  try {
+    // console.log('saga/UPLOAD IMAGES DATA: ', action.data);
+    const result = yield call(likePostAPI, action.data);
+    yield put({
+      type: LIKE_POST_SUCCESS,
+      data: { postId: action.data, userId: result.data.userId },
+    });
+  } catch (e) {
+    console.log(e);
+    yield put({
+      type: LIKE_POST_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchLikePost() {
+  yield takeLatest(LIKE_POST_REQUEST, likePost);
+}
+
+function unlikePostAPI(unlikePostId) {
+  return Axios.delete(`/post/${unlikePostId}/like`, {
+    withCredentials: true,
+  });
+}
+
+function* unlikePost(action) {
+  try {
+    // console.log('saga/UPLOAD IMAGES DATA: ', action.data);
+    const result = yield call(unlikePostAPI, action.data);
+    yield put({
+      type: UNLIKE_POST_SUCCESS,
+      data: { postId: action.data, userId: result.data.userId },
+    });
+  } catch (e) {
+    console.log(e);
+    yield put({
+      type: UNLIKE_POST_FAILURE,
+      error: e,
+    });
+  }
+}
+
+function* watchUnlikePost() {
+  yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
+}
+
 export default function* postSaga() {
   yield all([
     fork(watchAddPost),
@@ -223,5 +284,7 @@ export default function* postSaga() {
     fork(watchLoadHashtagPosts),
     fork(watchLoadUserPosts),
     fork(watchUploadImages),
+    fork(watchLikePost),
+    fork(watchUnlikePost),
   ]);
 }

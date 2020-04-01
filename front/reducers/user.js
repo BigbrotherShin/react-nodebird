@@ -1,10 +1,11 @@
-const dummyUser = {
-  nickname: '신주현',
-  Post: ['a', 'b', 'c'],
-  Followings: ['a', 'b', 'c'],
-  Followers: ['a', 'b'],
-  id: 1,
-};
+// const dummyUser = {
+//   nickname: '신주현',
+//   Post: ['a', 'b', 'c'],
+//   Followings: ['a', 'b', 'c'],
+//   Followers: ['a', 'b'],
+//   LikePosts: [],
+//   id: 1,
+// };
 
 export const initialState = {
   isLoggedIn: false, // 로그인 여부

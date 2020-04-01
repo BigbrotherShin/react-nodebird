@@ -15,6 +15,12 @@ router.get('/', async (req, res, next) => {
         {
           model: db.Image,
         },
+        {
+          model: db.User,
+          through: 'Like', // DB 테이블 명
+          as: 'Likers', // 프론트에 전달할 객체의 key
+          attributes: ['id'],
+        },
       ],
       order: [
         // Will escape title and validate DESC against a list of valid direction parameters

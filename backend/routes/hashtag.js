@@ -19,13 +19,13 @@ router.get('/:tag', async (req, res, next) => {
           attributes: ['id', 'nickname'],
         },
         {
-          model: db.Comment,
-          include: [
-            {
-              model: db.User,
-              attributes: ['id', 'nickname'],
-            },
-          ],
+          model: db.Image,
+        },
+        {
+          model: db.User,
+          through: 'Like',
+          as: 'Likers',
+          attributes: ['id'],
         },
       ],
     });

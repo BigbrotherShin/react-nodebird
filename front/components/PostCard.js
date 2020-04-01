@@ -5,11 +5,18 @@ import {
   HeartOutlined,
   MessageOutlined,
   EllipsisOutlined,
+  HeartTwoTone,
 } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST } from '../reducers/post';
+import {
+  ADD_COMMENT_REQUEST,
+  LOAD_COMMENTS_REQUEST,
+  UNLIKE_POST_REQUEST,
+  LIKE_POST_REQUEST,
+} from '../reducers/post';
 import Link from 'next/link';
+import PostImages from './PostImages';
 
 const PostCard = ({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
@@ -20,11 +27,13 @@ const PostCard = ({ post }) => {
   );
   const dispatch = useDispatch();
 
+  const liked = me && post.Likers && post.Likers.find(v => v.id === me.id);
+
   useEffect(() => {
     if (commentAdded) {
       setCommentText('');
     }
-    // console.log('POST:::', post);
+    // console.log('front/components/PostCard post: ', post);
   }, [commentAdded === true]);
 
   const toggleComment = useCallback(() => {
@@ -54,14 +63,37 @@ const PostCard = ({ post }) => {
     });
   }, [me && me.id, commentText]);
 
+  const onToggleLike = useCallback(() => {
+    if (!me) {
+      return alert('로그인이 필요합니다.');
+    }
+    if (liked) {
+      // 좋아요를 누른 상태
+      return dispatch({
+        type: UNLIKE_POST_REQUEST,
+        data: post.id,
+      });
+    } else {
+      // 좋아요를 안 누른 상태
+      return dispatch({
+        type: LIKE_POST_REQUEST,
+        data: post.id,
+      });
+    }
+  }, [me && me.id, post && post.id]);
+
   return (
     <div>
       <Card
         key={+post.createdAt}
-        cover={post.img && <img alt='example' src={post.img} />}
+        cover={post.Images[0] && <PostImages images={post.Images} />}
         actions={[
           <RetweetOutlined key='retweet' />,
-          <HeartOutlined key='heart' />,
+          liked ? (
+            <HeartTwoTone twoToneColor='#eb2f96' onClick={onToggleLike} />
+          ) : (
+            <HeartOutlined key='heart' onClick={onToggleLike} />
+          ),
           <span>
             <MessageOutlined
               key='message'
