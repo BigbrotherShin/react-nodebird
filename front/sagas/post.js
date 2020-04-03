@@ -31,6 +31,7 @@ import {
   RETWEET_FAILURE,
   RETWEET_REQUEST,
 } from '../reducers/post';
+import { ADD_POST_TO_ME } from '../reducers/user';
 
 import Axios from 'axios';
 
@@ -47,8 +48,14 @@ function* addPost(action) {
     const result = yield call(addPostAPI, action.data);
     // console.log('front/sagas/post addPost: result.data', result.data);
     yield put({
+      // post reducer의 데이터를 수정
       type: ADD_POST_SUCCESS,
       data: result.data,
+    });
+    yield put({
+      // user reducer의 데이터를 수정
+      type: ADD_POST_TO_ME,
+      data: result.data.id,
     });
   } catch (e) {
     console.log(e);

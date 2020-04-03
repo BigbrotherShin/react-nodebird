@@ -9,7 +9,7 @@ const Hashtag = ({ tag }) => {
   const { mainPosts } = useSelector(state => state.post);
 
   useEffect(() => {
-    console.log('TAGGGG: ', tag);
+    // console.log('TAGGGG: ', tag);
     dispatch({
       type: LOAD_HASHTAG_POSTS_REQUEST,
       data: tag,
@@ -30,7 +30,7 @@ Hashtag.propTypes = {
 };
 
 Hashtag.getInitialProps = async context => {
-  console.log('Hashtag getInitialProps: ', context.query.tag);
+  // console.log('Hashtag getInitialProps: ', context.query.tag);
   return { tag: context.query.tag };
 };
 

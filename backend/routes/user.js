@@ -95,6 +95,7 @@ router.get('/:id/posts', async (req, res, next) => {
           attributes: ['id'],
         },
       ],
+      order: [['createdAt', 'DESC']],
     });
 
     // console.log('!!!user posts!!!: ', userPosts);
@@ -164,7 +165,7 @@ router.post('/login', (req, res, next) => {
     });
   })(req, res, next);
 });
-router.post('/:id/follow', isLoggedIn, findUser, async (req, res, next) => {
+router.post('/:id/following', isLoggedIn, findUser, async (req, res, next) => {
   try {
     await req.findUser.addFollower(req.user.id);
     res.send(req.params.id);
@@ -173,16 +174,65 @@ router.post('/:id/follow', isLoggedIn, findUser, async (req, res, next) => {
     next(e);
   }
 });
-router.get('/:id/follow', (req, res) => {});
-router.delete('/:id/follow', isLoggedIn, findUser, async (req, res, next) => {
+router.get('/:id/followings', isLoggedIn, findUser, async (req, res, next) => {
   try {
-    await req.findUser.removeFollower(req.user.id);
+    const followings = await req.findUser.getFollowings({
+      attributes: ['id', 'nickname'],
+    });
+
+    res.json(followings);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+router.get('/:id/followers', isLoggedIn, findUser, async (req, res, next) => {
+  try {
+    const followers = await req.findUser.getFollowers({
+      attributes: ['id', 'nickname'],
+    });
+    res.json(followers);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+router.delete(
+  '/:id/following',
+  isLoggedIn,
+  findUser,
+  async (req, res, next) => {
+    try {
+      await req.findUser.removeFollower(req.user.id);
+      res.send(req.params.id);
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  },
+);
+router.delete('/:id/follower', isLoggedIn, findUser, async (req, res, next) => {
+  try {
+    await req.findUser.removeFollowing(req.user.id);
     res.send(req.params.id);
   } catch (e) {
     console.error(e);
     next(e);
   }
 });
-router.delete('/:id/follower', (req, res) => {});
+
+router.patch('/:id/edit', isLoggedIn, async (req, res, next) => {
+  try {
+    await db.User.update(
+      { nickname: req.body.nicknameText },
+      { where: { id: req.params.id } },
+    );
+
+    res.json({ nickname: req.body.nicknameText, id: req.params.id });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
 
 module.exports = router;

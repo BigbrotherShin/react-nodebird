@@ -16,7 +16,7 @@ const AppLayout = ({ children }) => {
         type: LOAD_USER_REQUEST,
       });
     }
-  }, []);
+  }, [isLoggedIn]);
 
   return (
     <div>
@@ -28,7 +28,10 @@ const AppLayout = ({ children }) => {
         </Menu.Item>
         {me ? (
           <Menu.Item key='profile'>
-            <Link href='/profile'>
+            <Link
+              href={{ pathname: '/profile', query: { id: me.id } }}
+              as={`/profile/${me.id}`}
+            >
               <a>프로필</a>
             </Link>
           </Menu.Item>

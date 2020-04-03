@@ -40,7 +40,6 @@ const PostImages = ({ images }) => {
         >
           <ImagesZoom images={images} onClose={onClose} />
         </Modal>
-        )}
       </>
     );
   }

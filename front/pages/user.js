@@ -12,10 +12,12 @@ const User = ({ id }) => {
   const { userInfo } = useSelector(state => state.user);
 
   useEffect(() => {
-    dispatch({
-      type: LOAD_USER_REQUEST,
-      data: id,
-    });
+    // console.log('pages/user.js id: ', id);
+    // console.log('pages/user.js props: ', props);
+    // dispatch({
+    //   type: LOAD_USER_REQUEST,
+    //   data: id,
+    // });
     dispatch({
       type: LOAD_USER_POSTS_REQUEST,
       data: id,

@@ -41,6 +41,7 @@ router.get('/:tag', async (req, res, next) => {
           ],
         },
       ],
+      orders: [['createdAt', 'DESC']],
     });
 
     // console.log('!!!hashtag posts!!!: ', hashtagPosts);
