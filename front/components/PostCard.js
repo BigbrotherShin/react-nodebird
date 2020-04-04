@@ -1,5 +1,15 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Card, Button, Avatar, Form, Input, List, Comment } from 'antd';
+import {
+  Card,
+  Button,
+  Avatar,
+  Form,
+  Input,
+  List,
+  Comment,
+  Dropdown,
+  Menu,
+} from 'antd';
 import {
   RetweetOutlined,
   HeartOutlined,
@@ -15,15 +25,18 @@ import {
   UNLIKE_POST_REQUEST,
   LIKE_POST_REQUEST,
   RETWEET_REQUEST,
+  REMOVE_POST_REQUEST,
 } from '../reducers/post';
 import Link from 'next/link';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
 import { UNFOLLOW_USER_REQUEST, FOLLOW_USER_REQUEST } from '../reducers/user';
+import EditModal from './EditModal';
 
 const PostCard = ({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [postEditVisible, setPostEditVisible] = useState(false);
   const { me } = useSelector(state => state.user);
   const { commentAdded, isAddingComment, isLoadingComments } = useSelector(
     state => state.post,
@@ -115,6 +128,32 @@ const PostCard = ({ post }) => {
     },
     [],
   );
+  const onPostDelete = useCallback(() => {
+    dispatch({
+      type: REMOVE_POST_REQUEST,
+      data: post.id,
+    });
+  }, [post.id]);
+
+  const onPostEditVisible = useCallback(() => {
+    setPostEditVisible(prevState => !prevState);
+  }, []);
+
+  const menu = (
+    <Menu>
+      <Menu.Item key='0' onClick={onPostEditVisible}>
+        수정
+      </Menu.Item>
+      <EditModal
+        postEditVisible={postEditVisible}
+        setPostEditVisible={setPostEditVisible}
+        post={post}
+      />
+      <Menu.Item key='1' onClick={onPostDelete}>
+        삭제
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <div>
@@ -132,15 +171,22 @@ const PostCard = ({ post }) => {
           ) : (
             <HeartOutlined key='heart' onClick={onToggleLike} />
           ),
+          <MessageOutlined
+            key='message'
+            onClick={toggleComment}
+            loading={isLoadingComments}
+          />,
           <span>
-            <MessageOutlined
-              key='message'
-              onClick={toggleComment}
-              loading={isLoadingComments}
-            />
+            <Dropdown overlay={menu} trigger={['click']}>
+              <a
+                className='ant-dropdown-link'
+                onClick={e => e.preventDefault()}
+              >
+                <EllipsisOutlined key='ellipsis' />
+              </a>
+            </Dropdown>
             {/* {post.Comments ? post.Comments.length : 0} */}
           </span>,
-          <EllipsisOutlined key='ellipsis' />,
         ]}
         title={
           post.RetweetId ? `${post.User.nickname}님이 리트윗 하셨습니다.` : null

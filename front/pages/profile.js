@@ -117,23 +117,22 @@ Profile.propTypes = {
 
 Profile.getInitialProps = async context => {
   // 이 직전에 LOAD_USER_REQUEST -> 이 요청이 끝나야 user.me가 생성됨
-  const state = context.store.getState();
   context.store.dispatch({
     type: LOAD_FOLLOWINGS_REQUEST,
-    data: state.user.me && state.user.me.id,
+    data: context.query.id,
   });
   context.store.dispatch({
     type: LOAD_FOLLOWERS_REQUEST,
-    data: state.user.me && state.user.me.id,
+    data: context.query.id,
   });
   context.store.dispatch({
     type: LOAD_USER_POSTS_REQUEST,
-    data: state.user.me && state.user.me.id,
+    data: context.query.id,
   });
-  // 아직까지는 state.user.me && state.user.me.id === null;
+  // 아직까지는 context.query.id === null;
   // 이 쯤에서 LOAD_USER_SUCCESS 되어서 user.me가 생김
   // 해결책 => me.id = 0 을 기본값으로 하여 서버에서 처리
-  return { id: state.user.me && state.user.me.id };
+  return { id: context.query.id };
 };
 
 export default Profile;

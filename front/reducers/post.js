@@ -23,6 +23,8 @@ export const initialState = {
   loadPostsErrorReason: '',
   loadCommentsErrorReason: '',
   likePostErrorReason: '',
+  isEditingPostContent: false,
+  editPostContentErrorReason: '',
 };
 
 // const dummyPost = {
@@ -89,6 +91,12 @@ export const RETWEET_FAILURE = 'RETWEET_FAILURE';
 export const REMOVE_POST_REQUEST = 'REMOVE_POST_REQUEST';
 export const REMOVE_POST_SUCCESS = 'REMOVE_POST_SUCCESS';
 export const REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
+
+export const EDIT_POST_REQUEST = 'EDIT_POST_REQUEST';
+export const EDIT_POST_SUCCESS = 'EDIT_POST_SUCCESS';
+export const EDIT_POST_FAILURE = 'EDIT_POST_FAILURE';
+
+export const REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME';
 
 // export const addPost = {
 //   type: ADD_POST,
@@ -293,6 +301,56 @@ const reducer = (state = initialState, action) => {
     case RETWEET_FAILURE: {
       return {
         ...state,
+      };
+    }
+    case REMOVE_POST_REQUEST: {
+      return {
+        ...state,
+      };
+    }
+    case REMOVE_POST_SUCCESS: {
+      return {
+        ...state,
+        mainPosts: state.mainPosts.filter(
+          v =>
+            v.id !== action.data.postId && v.RetweetId !== action.data.postId,
+        ),
+      };
+    }
+    case REMOVE_POST_FAILURE: {
+      return {
+        ...state,
+      };
+    }
+    case EDIT_POST_REQUEST: {
+      return {
+        ...state,
+        isEditingPostContent: true,
+        editedPostContent: false,
+      };
+    }
+    case EDIT_POST_SUCCESS: {
+      const postIndex = state.mainPosts.findIndex(
+        v => v.id === action.data.postId,
+      );
+      const post = state.mainPosts[postIndex];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = {
+        ...post,
+        content: action.data.editPostContent,
+      };
+      return {
+        ...state,
+        mainPosts,
+        isEditingPostContent: false,
+        editedPostContent: true,
+      };
+    }
+    case EDIT_POST_FAILURE: {
+      return {
+        ...state,
+        editPostContentErrorReason: action.error,
+        isEditingPostContent: false,
       };
     }
     default:

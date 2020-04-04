@@ -1,5 +1,8 @@
 const express = require('express');
 const db = require('../models');
+const {
+  Sequelize: { Op },
+} = require('../models');
 const path = require('path');
 const { isLoggedIn, findPost } = require('./middleware');
 const multer = require('multer');
@@ -207,6 +210,46 @@ router.post('/:id/retweet', isLoggedIn, findPost, async (req, res, next) => {
       ],
     });
     res.json(retweetWithPrevPost);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+
+router.delete('/:id/delete', isLoggedIn, findPost, async (req, res, next) => {
+  try {
+    if (req.findPost.UserId !== parseInt(req.user.id, 10)) {
+      return res.status(403).send('글쓴이가 아닙니다.');
+    }
+    await db.Post.destroy({
+      where: {
+        id: parseInt(req.params.id, 10),
+      },
+    });
+    res.json({ postId: parseInt(req.params.id, 10) });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+
+router.patch('/:id/edit', isLoggedIn, findPost, async (req, res, next) => {
+  try {
+    if (req.findPost.UserId !== parseInt(req.user.id, 10)) {
+      return res.status(403).send('글쓴이가 아닙니다.');
+    }
+    await db.Post.update(
+      { content: req.body.editPostContent },
+      {
+        where: {
+          id: parseInt(req.params.id, 10),
+        },
+      },
+    );
+    res.json({
+      editPostContent: req.body.editPostContent,
+      postId: parseInt(req.params.id, 10),
+    });
   } catch (e) {
     console.error(e);
     next(e);

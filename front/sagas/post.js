@@ -30,8 +30,14 @@ import {
   RETWEET_SUCCESS,
   RETWEET_FAILURE,
   RETWEET_REQUEST,
+  REMOVE_POST_SUCCESS,
+  REMOVE_POST_FAILURE,
+  REMOVE_POST_REQUEST,
+  EDIT_POST_SUCCESS,
+  EDIT_POST_FAILURE,
+  EDIT_POST_REQUEST,
 } from '../reducers/post';
-import { ADD_POST_TO_ME } from '../reducers/user';
+import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
 import Axios from 'axios';
 
@@ -320,6 +326,70 @@ function* watchRetweet() {
   yield takeLatest(RETWEET_REQUEST, retweet);
 }
 
+function deletePostAPI(deletePostId) {
+  return Axios.delete(`/post/${deletePostId}/delete`, {
+    withCredentials: true,
+  });
+}
+
+function* deletePost(action) {
+  try {
+    const result = yield call(deletePostAPI, action.data);
+    yield put({
+      type: REMOVE_POST_SUCCESS,
+      data: result.data,
+    });
+    yield put({
+      type: REMOVE_POST_OF_ME,
+      data: result.data,
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: REMOVE_POST_FAILURE,
+      error: e,
+    });
+    alert(e.response && e.response.data);
+  }
+}
+
+function* watchDeletePost() {
+  yield takeLatest(REMOVE_POST_REQUEST, deletePost);
+}
+
+function editPostAPI(editPostData) {
+  return Axios.patch(
+    `/post/${editPostData.postId}/edit`,
+    {
+      editPostContent: editPostData.editPostContent,
+    },
+    {
+      withCredentials: true,
+    },
+  );
+}
+
+function* editPost(action) {
+  try {
+    const result = yield call(editPostAPI, action.data);
+    yield put({
+      type: EDIT_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: EDIT_POST_FAILURE,
+      error: e,
+    });
+    alert(e.response && e.response.data);
+  }
+}
+
+function* watchEditPost() {
+  yield takeLatest(EDIT_POST_REQUEST, editPost);
+}
+
 export default function* postSaga() {
   yield all([
     fork(watchAddPost),
@@ -332,5 +402,7 @@ export default function* postSaga() {
     fork(watchLikePost),
     fork(watchUnlikePost),
     fork(watchRetweet),
+    fork(watchDeletePost),
+    fork(watchEditPost),
   ]);
 }

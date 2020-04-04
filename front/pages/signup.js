@@ -89,6 +89,10 @@ const Signup = () => {
     [term],
   );
 
+  if (me) {
+    return null;
+  }
+
   return (
     <Form onFinish={onFinish} style={{ padding: 10 }}>
       <div>
