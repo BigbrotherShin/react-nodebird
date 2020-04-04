@@ -5,18 +5,9 @@ import Link from 'next/link';
 import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
 import { useSelector, useDispatch } from 'react-redux';
-import { LOAD_USER_REQUEST } from '../reducers/user';
 
 const AppLayout = ({ children }) => {
-  const { me, isLoggedIn } = useSelector(state => state.user);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (!isLoggedIn) {
-      dispatch({
-        type: LOAD_USER_REQUEST,
-      });
-    }
-  }, [isLoggedIn]);
+  const { me } = useSelector(state => state.user);
 
   return (
     <div>

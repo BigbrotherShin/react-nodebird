@@ -46,7 +46,7 @@ exports.findUser = async (req, res, next) => {
   try {
     const findUser = await db.User.findOne({
       where: {
-        id: req.params.id,
+        id: parseInt(req.params.id, 10) || (req.user && req.user.id) || 0,
       },
       attributes: ['id', 'nickname'],
     });

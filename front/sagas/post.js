@@ -157,7 +157,7 @@ function* watchLoadComments() {
 }
 
 function loadHashtagPostsAPI(actionData) {
-  return Axios.get(`/hashtag/${actionData}`);
+  return Axios.get(`/hashtag/${encodeURIComponent(actionData)}`);
 }
 
 function* loadHashtagPosts(action) {
@@ -181,7 +181,7 @@ function* watchLoadHashtagPosts() {
 }
 
 function loadUserPostsAPI(actionData) {
-  return Axios.get(`/user/${actionData}/posts`);
+  return Axios.get(`/user/${actionData || 0}/posts`);
 }
 
 function* loadUserPosts(action) {

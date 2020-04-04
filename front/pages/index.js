@@ -6,17 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { LOAD_MAIN_POSTS_REQUEST } from '../reducers/post';
 
 const Home = () => {
-  const dispatch = useDispatch();
   const { me, isLoggedIn } = useSelector(state => state.user);
   const { mainPosts } = useSelector(state => state.post);
-
-  useEffect(() => {
-    dispatch({
-      type: LOAD_MAIN_POSTS_REQUEST,
-    });
-
-    // console.log('MAIN POSTS: ', mainPosts);
-  }, []);
 
   return (
     <div>
@@ -26,6 +17,13 @@ const Home = () => {
       })}
     </div>
   );
+};
+
+Home.getInitialProps = async context => {
+  // console.log(Object.keys(context.store));
+  await context.store.dispatch({
+    type: LOAD_MAIN_POSTS_REQUEST,
+  });
 };
 
 export default Home;

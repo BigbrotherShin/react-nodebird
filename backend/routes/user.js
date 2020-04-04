@@ -42,7 +42,9 @@ router.post('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const userInfo = await db.User.findOne({
-      where: { id: parseInt(req.params.id, 10) },
+      where: {
+        id: parseInt(req.params.id, 10) || (req.user && req.user.id) || 0,
+      },
       attributes: ['id', 'nickname'],
       include: [
         {
@@ -79,7 +81,10 @@ router.get('/:id/posts', async (req, res, next) => {
   try {
     // console.log('REQ!!!: ', req.body);
     const userPosts = await db.Post.findAll({
-      where: { userId: parseInt(req.params.id, 10), RetweetId: null },
+      where: {
+        userId: parseInt(req.params.id, 10) || (req.user && req.user.id) || 0,
+        RetweetId: null,
+      },
       include: [
         {
           model: db.User,

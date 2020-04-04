@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
-import { Button, List, Card, Collapse } from 'antd';
+import React, { useCallback } from 'react';
+import { Button, List, Card } from 'antd';
 import { StopOutlined } from '@ant-design/icons';
 import NicknameEditForm from '../components/NicknameEditForm';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,33 +9,16 @@ import {
   UNFOLLOW_USER_REQUEST,
   LOAD_FOLLOWINGS_REQUEST,
   LOAD_FOLLOWERS_REQUEST,
+  LOAD_USER_REQUEST,
 } from '../reducers/user';
 import { LOAD_USER_POSTS_REQUEST } from '../reducers/post';
 import PostCard from '../components/PostCard';
+import Axios from 'axios';
 
-const dummyProfile = {
-  name: '신주현',
-};
-
-const Profile = ({ id }) => {
+const Profile = () => {
   const dispatch = useDispatch();
   const { mainPosts } = useSelector(state => state.post);
   const { me, followingList, followerList } = useSelector(state => state.user);
-
-  useEffect(() => {
-    dispatch({
-      type: LOAD_FOLLOWINGS_REQUEST,
-      data: id,
-    });
-    dispatch({
-      type: LOAD_FOLLOWERS_REQUEST,
-      data: id,
-    });
-    dispatch({
-      type: LOAD_USER_POSTS_REQUEST,
-      data: id,
-    });
-  }, []);
 
   const onFollwerDelete = useCallback(
     id => () => {
@@ -133,8 +116,24 @@ Profile.propTypes = {
 };
 
 Profile.getInitialProps = async context => {
-  // console.log('Hashtag getInitialProps: ', context.query.tag);
-  return { id: context.query.id };
+  // 이 직전에 LOAD_USER_REQUEST -> 이 요청이 끝나야 user.me가 생성됨
+  const state = context.store.getState();
+  context.store.dispatch({
+    type: LOAD_FOLLOWINGS_REQUEST,
+    data: state.user.me && state.user.me.id,
+  });
+  context.store.dispatch({
+    type: LOAD_FOLLOWERS_REQUEST,
+    data: state.user.me && state.user.me.id,
+  });
+  context.store.dispatch({
+    type: LOAD_USER_POSTS_REQUEST,
+    data: state.user.me && state.user.me.id,
+  });
+  // 아직까지는 state.user.me && state.user.me.id === null;
+  // 이 쯤에서 LOAD_USER_SUCCESS 되어서 user.me가 생김
+  // 해결책 => me.id = 0 을 기본값으로 하여 서버에서 처리
+  return { id: state.user.me && state.user.me.id };
 };
 
 export default Profile;

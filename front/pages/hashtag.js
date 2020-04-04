@@ -5,16 +5,7 @@ import { LOAD_HASHTAG_POSTS_REQUEST } from '../reducers/post';
 import PostCard from '../components/PostCard';
 
 const Hashtag = ({ tag }) => {
-  const dispatch = useDispatch();
   const { mainPosts } = useSelector(state => state.post);
-
-  useEffect(() => {
-    // console.log('TAGGGG: ', tag);
-    dispatch({
-      type: LOAD_HASHTAG_POSTS_REQUEST,
-      data: tag,
-    });
-  }, []);
 
   return (
     <div>
@@ -25,13 +16,14 @@ const Hashtag = ({ tag }) => {
   );
 };
 
-Hashtag.propTypes = {
-  tag: PropTypes.string.isRequired,
-};
-
 Hashtag.getInitialProps = async context => {
-  // console.log('Hashtag getInitialProps: ', context.query.tag);
-  return { tag: context.query.tag };
+  console.log('Hashtag getInitialProps: ', context.query.tag);
+  const tag = context.query.tag;
+  context.store.dispatch({
+    type: LOAD_HASHTAG_POSTS_REQUEST,
+    data: tag,
+  });
+  return { tag };
 };
 
 export default Hashtag;
