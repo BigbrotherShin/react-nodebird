@@ -5,10 +5,17 @@ const router = express.Router();
 
 router.get('/:tag', async (req, res, next) => {
   // POST /api/posts/hashtag/:tag
+  let where = {};
+  if (parseInt(req.query.lastId, 10)) {
+    where = {
+      id: { [db.Sequelize.Op.lt]: parseInt(req.query.lastId, 10) },
+    };
+  }
   try {
     // console.log('REQ!!!: ', req.body);
     // console.log('PARAMS!!!!!: ', req.params);
     const hashtagPosts = await db.Post.findAll({
+      where,
       include: [
         {
           model: db.Hashtag,
@@ -42,6 +49,7 @@ router.get('/:tag', async (req, res, next) => {
         },
       ],
       orders: [['createdAt', 'DESC']],
+      limit: parseInt(req.query.limit, 10),
     });
 
     // console.log('!!!hashtag posts!!!: ', hashtagPosts);

@@ -1,12 +1,12 @@
 const express = require('express');
 const db = require('../models');
-const {
-  Sequelize: { Op },
-} = require('../models');
+const { Sequelize } = require('../models');
 const path = require('path');
 const { isLoggedIn, findPost } = require('./middleware');
 const multer = require('multer');
 const router = express.Router();
+
+const { Op } = Sequelize;
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -34,20 +34,20 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
 
     if (hashtags) {
       const result = await Promise.all(
-        hashtags.map(tag =>
+        hashtags.map((tag) =>
           db.Hashtag.findOrCreate({
             where: { name: tag.slice(1).toLowerCase() },
           }),
         ),
       );
       console.log(result);
-      await newPost.addHashtags(result.map(r => r[0]));
+      await newPost.addHashtags(result.map((r) => r[0]));
     }
 
     if (Array.isArray(req.body.image)) {
       // 이미지 주소를 여러개 올리면 images: [주소1, 주소2] 그렇기 때문에 Array.isArray()로 배열인지 아닌지 확인
       const images = await Promise.all(
-        req.body.image.map(image => {
+        req.body.image.map((image) => {
           return db.Image.create({ src: image });
         }),
       );
@@ -136,13 +136,13 @@ router.post('/images', upload.array('image'), (req, res) => {
   // upload.single() 이미지 한 장 올릴 때 -> req.file
   // upload.none() 이미지나 파일을 안 올릴 때 -> req.body
 
-  res.json(req.files.map(v => v.filename));
+  res.json(req.files.map((v) => v.filename));
 });
 
 router.post('/:id/like', isLoggedIn, findPost, async (req, res, next) => {
   try {
     await req.findPost.addLiker(req.user.id);
-    res.json({ userId: req.user.id });
+    res.json({ userId: req.user.id, postId: parseInt(req.params.id, 10) });
   } catch (e) {
     console.error(e);
     next(e);
@@ -152,7 +152,7 @@ router.post('/:id/like', isLoggedIn, findPost, async (req, res, next) => {
 router.delete('/:id/like', isLoggedIn, findPost, async (req, res, next) => {
   try {
     await req.findPost.removeLiker(req.user.id);
-    res.json({ userId: req.user.id });
+    res.json({ userId: req.user.id, postId: parseInt(req.params.id, 10) });
   } catch (e) {
     console.error(e);
     next(e);
@@ -221,6 +221,11 @@ router.delete('/:id/delete', isLoggedIn, findPost, async (req, res, next) => {
     if (req.findPost.UserId !== parseInt(req.user.id, 10)) {
       return res.status(403).send('글쓴이가 아닙니다.');
     }
+    await db.Post.destroy({
+      where: {
+        RetweetId: parseInt(req.params.id, 10),
+      },
+    });
     await db.Post.destroy({
       where: {
         id: parseInt(req.params.id, 10),

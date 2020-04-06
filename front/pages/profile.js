@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Button, List, Card } from 'antd';
 import { StopOutlined } from '@ant-design/icons';
 import NicknameEditForm from '../components/NicknameEditForm';
@@ -10,18 +10,39 @@ import {
   LOAD_FOLLOWINGS_REQUEST,
   LOAD_FOLLOWERS_REQUEST,
   LOAD_USER_REQUEST,
+  UNLOAD_FOLLOWERS,
+  UNLOAD_FOLLOWINGS,
 } from '../reducers/user';
-import { LOAD_USER_POSTS_REQUEST } from '../reducers/post';
+import { LOAD_USER_POSTS_REQUEST, UNLOAD_MAINPOSTS } from '../reducers/post';
 import PostCard from '../components/PostCard';
 import Axios from 'axios';
 
-const Profile = () => {
+const Profile = ({ id }) => {
   const dispatch = useDispatch();
-  const { mainPosts } = useSelector(state => state.post);
-  const { me, followingList, followerList } = useSelector(state => state.user);
+  const { mainPosts, hasMorePost } = useSelector((state) => state.post);
+  const {
+    me,
+    followingList,
+    followerList,
+    hasMoreFollowings,
+    hasMoreFollowers,
+  } = useSelector((state) => state.user);
 
-  const onFollwerDelete = useCallback(
-    id => () => {
+  useEffect(() => {
+    return () => {
+      dispatch({
+        type: UNLOAD_FOLLOWERS,
+        data: id,
+      });
+      dispatch({
+        type: UNLOAD_FOLLOWINGS,
+        data: id,
+      });
+    };
+  }, []);
+
+  const onFollowerDelete = useCallback(
+    (id) => () => {
       dispatch({
         type: REMOVE_FOLLOWER_REQUEST,
         data: id,
@@ -31,7 +52,7 @@ const Profile = () => {
   );
 
   const onFollowingDelete = useCallback(
-    id => () => {
+    (id) => () => {
       dispatch({
         type: UNFOLLOW_USER_REQUEST,
         data: id,
@@ -39,6 +60,31 @@ const Profile = () => {
     },
     [],
   );
+
+  const loadMoreFollowings = useCallback(() => {
+    dispatch({
+      type: LOAD_FOLLOWINGS_REQUEST,
+      data: id,
+      offset: followingList.length,
+    });
+  }, [followingList.length]);
+
+  const loadMoreFollowers = useCallback(() => {
+    dispatch({
+      type: LOAD_FOLLOWERS_REQUEST,
+      data: id,
+      offset: followerList.length,
+    });
+  }, [followerList.length]);
+
+  const loadMoreUserPosts = useCallback(() => {
+    dispatch({
+      type: LOAD_USER_POSTS_REQUEST,
+      data: id,
+      lastId:
+        mainPosts[mainPosts.length - 1] && mainPosts[mainPosts.length - 1].id,
+    });
+  }, [mainPosts.length]);
 
   return me ? (
     <div>
@@ -48,17 +94,23 @@ const Profile = () => {
         grid={{ gutter: 4, xs: 2, md: 3 }}
         size='small'
         header={<div>팔로워 목록</div>}
-        loadMore={<Button style={{ width: '100%' }}>더 보기</Button>}
+        loadMore={
+          hasMoreFollowers ? (
+            <Button style={{ width: '100%' }} onClick={loadMoreFollowers}>
+              더 보기
+            </Button>
+          ) : null
+        }
         bordered
         dataSource={followerList}
-        renderItem={item => {
+        renderItem={(item) => {
           return (
             <List.Item style={{ maginTop: '20px' }}>
               <Card
                 actions={[
                   <StopOutlined
                     key={item}
-                    onClick={onFollwerDelete(item.id)}
+                    onClick={onFollowerDelete(item.id)}
                   />,
                 ]}
               >
@@ -73,10 +125,16 @@ const Profile = () => {
         grid={{ gutter: 4, xs: 2, md: 3 }}
         size='small'
         header={<div>팔로잉 목록</div>}
-        loadMore={<Button style={{ width: '100%' }}>더 보기</Button>}
+        loadMore={
+          hasMoreFollowings ? (
+            <Button style={{ width: '100%' }} onClick={loadMoreFollowings}>
+              더 보기
+            </Button>
+          ) : null
+        }
         bordered
         dataSource={followingList}
-        renderItem={item => {
+        renderItem={(item) => {
           return (
             <List.Item style={{ maginTop: '20px' }}>
               <Card
@@ -98,10 +156,16 @@ const Profile = () => {
         // grid={{ gutter: 4, xs: 2, md: 3 }}
         // size='large'
         header={<div>게시물</div>}
-        loadMore={<Button style={{ width: '100%' }}>더 보기</Button>}
+        loadMore={
+          hasMorePost ? (
+            <Button style={{ width: '100%' }} onClick={loadMoreUserPosts}>
+              더 보기
+            </Button>
+          ) : null
+        }
         bordered
         dataSource={mainPosts}
-        renderItem={item => {
+        renderItem={(item) => {
           return <PostCard key={item} post={item} />;
         }}
       />
@@ -115,15 +179,23 @@ Profile.propTypes = {
   id: PropTypes.number.isRequired,
 };
 
-Profile.getInitialProps = async context => {
+Profile.getInitialProps = async (context) => {
   // 이 직전에 LOAD_USER_REQUEST -> 이 요청이 끝나야 user.me가 생성됨
+  const state = context.store.getState();
+  if (state.post.gotPosts) {
+    context.store.dispatch({
+      type: UNLOAD_MAINPOSTS,
+    });
+  }
   context.store.dispatch({
     type: LOAD_FOLLOWINGS_REQUEST,
     data: context.query.id,
+    offset: state.user.followingList.length,
   });
   context.store.dispatch({
     type: LOAD_FOLLOWERS_REQUEST,
     data: context.query.id,
+    offset: state.user.followerList.length,
   });
   context.store.dispatch({
     type: LOAD_USER_POSTS_REQUEST,

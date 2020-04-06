@@ -78,12 +78,19 @@ router.get('/:id', async (req, res, next) => {
 
 router.get('/:id/posts', async (req, res, next) => {
   // GET /api/user/:id/posts
+  let wherePlus = {};
+  if (parseInt(req.query.lastId)) {
+    wherePlus = {
+      id: { [db.Sequelize.Op.lt]: parseInt(req.query.lastId, 10) },
+    };
+  }
   try {
     // console.log('REQ!!!: ', req.body);
     const userPosts = await db.Post.findAll({
       where: {
         userId: parseInt(req.params.id, 10) || (req.user && req.user.id) || 0,
         RetweetId: null,
+        ...wherePlus,
       },
       include: [
         {
@@ -101,6 +108,7 @@ router.get('/:id/posts', async (req, res, next) => {
         },
       ],
       order: [['createdAt', 'DESC']],
+      limit: parseInt(req.query.limit, 10),
     });
 
     // console.log('!!!user posts!!!: ', userPosts);
@@ -131,7 +139,7 @@ router.post('/login', (req, res, next) => {
       // 로직 상 에러가 있는 경우
       return res.status(401).send(info.reason);
     }
-    return req.login(user, async loginErr => {
+    return req.login(user, async (loginErr) => {
       try {
         if (loginErr) {
           return next(loginErr);
@@ -183,6 +191,8 @@ router.get('/:id/followings', isLoggedIn, findUser, async (req, res, next) => {
   try {
     const followings = await req.findUser.getFollowings({
       attributes: ['id', 'nickname'],
+      limit: parseInt(req.query.limit, 10),
+      offset: parseInt(req.query.offset, 10),
     });
 
     res.json(followings);
@@ -195,6 +205,8 @@ router.get('/:id/followers', isLoggedIn, findUser, async (req, res, next) => {
   try {
     const followers = await req.findUser.getFollowers({
       attributes: ['id', 'nickname'],
+      limit: parseInt(req.query.limit, 10),
+      offset: parseInt(req.query.offset, 10),
     });
     res.json(followers);
   } catch (e) {
