@@ -266,11 +266,9 @@ const reducer = (state = initialState, action) => {
         };
       }
       case LOAD_FOLLOWERS_SUCCESS: {
-        return {
-          ...state,
-          followerList: state.followerList.concat(action.data),
-          hasMoreFollowers: action.data.length === 3,
-        };
+        action.data.forEach((v) => draft.followerList.push(v));
+        draft.hasMoreFollowers = action.data.length === 3;
+        break;
       }
       case LOAD_FOLLOWERS_FAILURE: {
         return {
