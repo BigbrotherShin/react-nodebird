@@ -2,9 +2,10 @@ import React, { useCallback } from 'react';
 import { Card, Avatar, Button } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { LOG_OUT_REQUEST } from '../reducers/user';
+import Link from 'next/link';
 
 const UserProfile = () => {
-  const { me } = useSelector(state => state.user);
+  const { me } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const onLogout = useCallback(() => {
     dispatch({
@@ -15,21 +16,46 @@ const UserProfile = () => {
   return (
     <Card
       actions={[
-        <div key='twit'>
-          쨱쨱
-          <br />
-          {me.Posts.length}
-        </div>,
-        <div key='following'>
-          팔로잉
-          <br />
-          {me.Followings.length}
-        </div>,
-        <div key='follower'>
-          팔로워
-          <br />
-          {me.Followers.length}
-        </div>,
+        <Link
+          key='twit'
+          href={{ pathname: '/profile', query: { id: me.id } }}
+          as={`/profile/${me.id}`}
+        >
+          <a>
+            <div>
+              게시물
+              <br />
+              {me.Posts.length}
+            </div>
+          </a>
+        </Link>,
+        ,
+        <Link
+          key='following'
+          href={{ pathname: '/profile', query: { id: me.id } }}
+          as={`/profile/${me.id}`}
+        >
+          <a>
+            <div>
+              팔로잉
+              <br />
+              {me.Followings.length}
+            </div>
+          </a>
+        </Link>,
+        <Link
+          key='follower'
+          href={{ pathname: '/profile', query: { id: me.id } }}
+          as={`/profile/${me.id}`}
+        >
+          <a>
+            <div>
+              팔로워
+              <br />
+              {me.Followers.length}
+            </div>
+          </a>
+        </Link>,
       ]}
     >
       <Card.Meta

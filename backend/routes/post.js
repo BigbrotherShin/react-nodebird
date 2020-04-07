@@ -261,4 +261,56 @@ router.patch('/:id/edit', isLoggedIn, findPost, async (req, res, next) => {
   }
 });
 
+router.get('/:id', async (req, res, next) => {
+  try {
+    const post = await db.Post.findOne({
+      where: {
+        id: parseInt(req.params.id, 10),
+      },
+      include: [
+        {
+          model: db.User,
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: db.User,
+          as: 'Likers',
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: db.Comment,
+          include: [
+            {
+              model: db.User,
+              attributes: ['id', 'nickname'],
+            },
+          ],
+        },
+        {
+          model: db.Image,
+        },
+        {
+          model: db.Post,
+          as: 'Retweet',
+          include: [
+            {
+              model: db.User,
+              attributes: ['id', 'nickname'],
+            },
+            {
+              model: db.Image,
+            },
+          ],
+        },
+      ],
+    });
+    console.log(post);
+
+    res.json(post);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+
 module.exports = router;

@@ -2,20 +2,7 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { PlusOutlined } from '@ant-design/icons';
 import ImagesZoom from './ImagesZoom';
-import Modal from 'react-modal';
-
-const customStyles = {
-  top: '50%',
-  left: '50%',
-  right: 'auto',
-  bottom: 'auto',
-  marginRight: '-50%',
-  transform: 'translate(-50%, -50%)',
-  display: 'flex',
-  alignItem: 'center',
-};
-
-Modal.setAppElement('#__next');
+import { Modal } from 'antd';
 
 const PostImages = ({ images }) => {
   const [showImagesZoom, setShowImagesZoom] = useState(false);
@@ -33,10 +20,10 @@ const PostImages = ({ images }) => {
       <>
         <img src={`http://localhost:3065/${images[0].src}`} onClick={onZoom} />
         <Modal
-          isOpen={showImagesZoom}
-          onRequestClose={onClose}
-          style={{ ...customStyles }}
-          contentLabel='Example Modal'
+          visible={showImagesZoom}
+          onCancel={onClose}
+          title='상세 이미지'
+          footer={null}
         >
           <ImagesZoom images={images} onClose={onClose} />
         </Modal>
@@ -60,10 +47,10 @@ const PostImages = ({ images }) => {
         </div>
         {showImagesZoom && (
           <Modal
-            isOpen={showImagesZoom}
-            onRequestClose={onClose}
-            style={{ ...customStyles }}
-            contentLabel='Example Modal'
+            visible={showImagesZoom}
+            onCancel={onClose}
+            title='상세 이미지'
+            footer={null}
           >
             <ImagesZoom images={images} onClose={onClose} />
           </Modal>
@@ -96,10 +83,10 @@ const PostImages = ({ images }) => {
       </div>
       {showImagesZoom && (
         <Modal
-          isOpen={showImagesZoom}
-          onRequestClose={onClose}
-          style={{ ...customStyles }}
-          contentLabel='Example Modal'
+          visible={showImagesZoom}
+          onCancel={onClose}
+          title='상세 이미지'
+          footer={null}
         >
           <ImagesZoom images={images} onClose={onClose} />
         </Modal>

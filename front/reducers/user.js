@@ -27,6 +27,8 @@ export const initialState = {
   editNicknameErrorReason: '', // 닉네임 수정 요청 실패 사유
   hasMoreFollowings: false,
   hasMoreFollowers: false,
+  gotFollowings: null,
+  gotFollowers: null,
 };
 
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST'; // 액션의 이름
@@ -247,11 +249,10 @@ const reducer = (state = initialState, action) => {
         };
       }
       case LOAD_FOLLOWINGS_SUCCESS: {
-        return {
-          ...state,
-          followingList: state.followingList.concat(action.data),
-          hasMoreFollowings: action.data.length === 3,
-        };
+        action.data.forEach((v) => draft.followingList.push(v));
+        draft.hasMoreFollowings = action.data.length === 3;
+        draft.gotFollowings = true;
+        break;
       }
       case LOAD_FOLLOWINGS_FAILURE: {
         return {
@@ -268,6 +269,7 @@ const reducer = (state = initialState, action) => {
       case LOAD_FOLLOWERS_SUCCESS: {
         action.data.forEach((v) => draft.followerList.push(v));
         draft.hasMoreFollowers = action.data.length === 3;
+        draft.gotFollowers = true;
         break;
       }
       case LOAD_FOLLOWERS_FAILURE: {
@@ -277,16 +279,14 @@ const reducer = (state = initialState, action) => {
         };
       }
       case UNLOAD_FOLLOWINGS: {
-        return {
-          ...state,
-          followingList: [],
-        };
+        draft.followingList = [];
+        draft.gotFollowings = false;
+        break;
       }
       case UNLOAD_FOLLOWERS: {
-        return {
-          ...state,
-          followerList: [],
-        };
+        draft.followerList = [];
+        draft.gotFollowers = false;
+        break;
       }
       case REMOVE_FOLLOWER_REQUEST: {
         return {

@@ -29,6 +29,7 @@ export const initialState = {
   editPostContentErrorReason: '',
   hasMorePost: false,
   gotPosts: false,
+  singlePost: null,
 };
 
 // const dummyPost = {
@@ -101,6 +102,10 @@ export const EDIT_POST_SUCCESS = 'EDIT_POST_SUCCESS';
 export const EDIT_POST_FAILURE = 'EDIT_POST_FAILURE';
 
 export const UNLOAD_MAINPOSTS = 'UNLOAD_MAINPOSTS';
+
+export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST';
+export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS';
+export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE';
 
 // export const addPost = {
 //   type: ADD_POST,
@@ -186,7 +191,7 @@ const reducer = (state = initialState, action) => {
       case LOAD_USER_POSTS_REQUEST: {
         return {
           ...state,
-          mainPosts: action.lastId === 0 ? [] : state.mainPosts,
+          mainPosts: !action.lastId ? [] : state.mainPosts,
           hasMorePost: action.lastId ? state.hasMorePost : true,
         };
       }
@@ -332,6 +337,16 @@ const reducer = (state = initialState, action) => {
           mainPosts: [],
           gotPosts: false,
         };
+      }
+      case LOAD_POST_REQUEST: {
+        break;
+      }
+      case LOAD_POST_SUCCESS: {
+        draft.singlePost = action.data;
+        break;
+      }
+      case LOAD_POST_FAILURE: {
+        break;
       }
       default:
         return { ...state };

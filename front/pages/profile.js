@@ -28,19 +28,6 @@ const Profile = ({ id }) => {
     hasMoreFollowers,
   } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    return () => {
-      dispatch({
-        type: UNLOAD_FOLLOWERS,
-        data: id,
-      });
-      dispatch({
-        type: UNLOAD_FOLLOWINGS,
-        data: id,
-      });
-    };
-  }, []);
-
   const onFollowerDelete = useCallback(
     (id) => () => {
       dispatch({
@@ -109,7 +96,7 @@ const Profile = ({ id }) => {
               <Card
                 actions={[
                   <StopOutlined
-                    key={item}
+                    key={item.id}
                     onClick={onFollowerDelete(item.id)}
                   />,
                 ]}
@@ -140,7 +127,7 @@ const Profile = ({ id }) => {
               <Card
                 actions={[
                   <StopOutlined
-                    key={item}
+                    key={item.id}
                     onClick={onFollowingDelete(item.id)}
                   />,
                 ]}
@@ -166,7 +153,7 @@ const Profile = ({ id }) => {
         bordered
         dataSource={mainPosts}
         renderItem={(item) => {
-          return <PostCard key={item} post={item} />;
+          return <PostCard key={item.id} post={item} />;
         }}
       />
     </div>
@@ -187,15 +174,23 @@ Profile.getInitialProps = async (context) => {
       type: UNLOAD_MAINPOSTS,
     });
   }
+  if (state.user.gotFollowings) {
+    context.store.dispatch({
+      type: UNLOAD_FOLLOWERS,
+    });
+  }
+  if (state.user.gotFollowers) {
+    context.store.dispatch({
+      type: UNLOAD_FOLLOWINGS,
+    });
+  }
   context.store.dispatch({
     type: LOAD_FOLLOWINGS_REQUEST,
     data: context.query.id,
-    offset: state.user.followingList.length,
   });
   context.store.dispatch({
     type: LOAD_FOLLOWERS_REQUEST,
     data: context.query.id,
-    offset: state.user.followerList.length,
   });
   context.store.dispatch({
     type: LOAD_USER_POSTS_REQUEST,

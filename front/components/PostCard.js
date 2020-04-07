@@ -32,18 +32,19 @@ import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
 import { UNFOLLOW_USER_REQUEST, FOLLOW_USER_REQUEST } from '../reducers/user';
 import EditModal from './EditModal';
+import styled from 'styled-components';
 
 const PostCard = ({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [postEditVisible, setPostEditVisible] = useState(false);
-  const { me } = useSelector(state => state.user);
+  const { me } = useSelector((state) => state.user);
   const { commentAdded, isAddingComment, isLoadingComments } = useSelector(
-    state => state.post,
+    (state) => state.post,
   );
   const dispatch = useDispatch();
 
-  const liked = me && post.Likers && post.Likers.find(v => v.id === me.id);
+  const liked = me && post.Likers && post.Likers.find((v) => v.id === me.id);
 
   useEffect(() => {
     if (commentAdded) {
@@ -53,7 +54,7 @@ const PostCard = ({ post }) => {
   }, [commentAdded === true]);
 
   const toggleComment = useCallback(() => {
-    setCommentFormOpened(prev => !prev);
+    setCommentFormOpened((prev) => !prev);
     if (!commentFormOpened) {
       dispatch({
         type: LOAD_COMMENTS_REQUEST,
@@ -62,7 +63,7 @@ const PostCard = ({ post }) => {
     }
   }, [commentFormOpened]);
 
-  const onChangeCommentText = useCallback(e => {
+  const onChangeCommentText = useCallback((e) => {
     setCommentText(e.target.value);
   }, []);
 
@@ -85,14 +86,14 @@ const PostCard = ({ post }) => {
     }
     if (liked) {
       // 좋아요를 누른 상태
-      console.log('components/PostCard.js liked: ', liked);
+      // console.log('components/PostCard.js liked: ', liked);
       return dispatch({
         type: UNLIKE_POST_REQUEST,
         data: post.id,
       });
     } else {
       // 좋아요를 안 누른 상태
-      console.log('components/PostCard.js liked: ', liked);
+      // console.log('components/PostCard.js liked: ', liked);
       return dispatch({
         type: LIKE_POST_REQUEST,
         data: post.id,
@@ -111,7 +112,7 @@ const PostCard = ({ post }) => {
   }, [me && me.id, post && post.id]);
 
   const onUnfollow = useCallback(
-    userId => () => {
+    (userId) => () => {
       dispatch({
         type: UNFOLLOW_USER_REQUEST,
         data: userId,
@@ -120,7 +121,7 @@ const PostCard = ({ post }) => {
     [],
   );
   const onFollow = useCallback(
-    userId => () => {
+    (userId) => () => {
       dispatch({
         type: FOLLOW_USER_REQUEST,
         data: userId,
@@ -136,7 +137,7 @@ const PostCard = ({ post }) => {
   }, [post.id]);
 
   const onPostEditVisible = useCallback(() => {
-    setPostEditVisible(prevState => !prevState);
+    setPostEditVisible((prevState) => !prevState);
   }, []);
 
   const menu = (
@@ -155,11 +156,27 @@ const PostCard = ({ post }) => {
     </Menu>
   );
 
+  const CardWrapper = styled.div`
+    margin-bottom: 20px;
+  `;
+
   return (
-    <div>
+    <CardWrapper>
+      {/* <Link
+        href={{
+          pathname: '/post',
+          query: { id: post.id },
+        }}
+        as={`/post/${post.id}`}
+      >
+        <a> */}
+      {/* <div> */}
       <Card
+        hoverable
         key={+post.createdAt}
-        cover={post.Images[0] && <PostImages images={post.Images} />}
+        cover={
+          post.Images && post.Images[0] && <PostImages images={post.Images} />
+        }
         actions={[
           <RetweetOutlined key='retweet' onClick={onRetweet} />,
           liked ? (
@@ -180,7 +197,7 @@ const PostCard = ({ post }) => {
             <Dropdown overlay={menu} trigger={['click']}>
               <a
                 className='ant-dropdown-link'
-                onClick={e => e.preventDefault()}
+                onClick={(e) => e.preventDefault()}
               >
                 <EllipsisOutlined key='ellipsis' />
               </a>
@@ -193,7 +210,7 @@ const PostCard = ({ post }) => {
         }
         extra={
           !me || post.User.id === me.id ? null : me.Followings &&
-            me.Followings.find(v => v.id === post.UserId) ? (
+            me.Followings.find((v) => v.id === post.UserId) ? (
             <Button onClick={onUnfollow(post.User.id)}>언팔로우</Button>
           ) : (
             <Button onClick={onFollow(post.User.id)}>팔로우</Button>
@@ -204,6 +221,7 @@ const PostCard = ({ post }) => {
           <Card
             key={+post.Retweet.createdAt}
             cover={
+              post.Retweet.Images &&
               post.Retweet.Images[0] && (
                 <PostImages images={post.Retweet.Images} />
               )
@@ -281,13 +299,16 @@ const PostCard = ({ post }) => {
             header={`${post.comments ? post.comments.length : 0} 댓글`}
             itemLayout='horizontal'
             dataSource={post.comments || []}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item>
                 <Comment
                   author={item.User.nickname}
                   avatar={
                     <Link
-                      href={{ pathname: '/user', query: { id: item.User.id } }}
+                      href={{
+                        pathname: '/user',
+                        query: { id: item.User.id },
+                      }}
                       as={`/user/${item.User.id}`}
                     >
                       <a>
@@ -303,7 +324,10 @@ const PostCard = ({ post }) => {
           />
         </>
       )}
-    </div>
+      {/* </div> */}
+      {/* </a>
+      </Link> */}
+    </CardWrapper>
   );
 };
 

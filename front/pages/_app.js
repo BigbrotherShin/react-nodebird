@@ -1,13 +1,13 @@
 // Next가 자동적으로 이 컴포넌트를 부모컴포넌트로 인식
 // pages 들의 공통적인 부분을 모아줘라
 import React from 'react';
-import Head from 'next/head';
 import { createStore, compose, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 import withRedux from 'next-redux-wrapper';
 import withReduxSaga from 'next-redux-saga';
+import Helmet from 'react-helmet';
 import AppLayout from '../components/AppLayout';
 import reducer from '../reducers';
 import rootSaga from '../sagas';
@@ -45,24 +45,61 @@ const makeStore = (initialState, options) => {
 function NodeBird({ Component, pageProps, store }) {
   return (
     <Provider store={store}>
-      <Head>
-        <title>Node Bird</title>
-        <link
-          rel='stylesheet'
-          href='https://cdnjs.cloudflare.com/ajax/libs/antd/4.0.1/antd.css'
-        />
-        <link
-          rel='stylesheet'
-          type='text/css'
-          charSet='UTF-8'
-          href='https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css'
-        />
-        <link
-          rel='stylesheet'
-          type='text/css'
-          href='https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css'
-        />
-      </Head>
+      <Helmet
+        title='BigbroShin SNS'
+        htmlAttributes={{ lang: 'ko' }}
+        meta={[
+          {
+            charset: 'UTF-8',
+          },
+          {
+            name: 'viewport',
+            content: 'width=device-width',
+          },
+          {
+            'http-equiv': 'X-UACompatible',
+            content: 'IE=edge',
+          },
+          {
+            name: 'description',
+            content: 'BigbroShin SNS',
+          },
+          {
+            name: 'og.title',
+            content: 'BigbroShin SNS',
+          },
+          {
+            name: 'og:description',
+            content: 'BigbroShin SNS',
+          },
+          {
+            property: 'og:type',
+            content: 'website',
+          },
+        ]}
+        link={[
+          {
+            rel: 'stylesheet',
+            href: 'https://cdnjs.cloudflare.com/ajax/libs/antd/4.0.1/antd.css',
+          },
+          {
+            rel: 'stylesheet',
+            href:
+              'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css',
+          },
+          {
+            rel: 'stylesheet',
+            href:
+              'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css',
+          },
+        ]}
+        script={[
+          {
+            src:
+              'https://cdnjs.cloudflare.com/ajax/libs/antd/4.1.1/antd.min.js',
+          },
+        ]}
+      />
       <AppLayout>
         <Component {...pageProps} /> {/* Component JSX 형식으로 작성할 것 */}
         {/* Next에서 pages 폴더 내의 Components를 자동적으로 props로 넣어줌 */}
@@ -72,12 +109,12 @@ function NodeBird({ Component, pageProps, store }) {
 }
 
 NodeBird.propTypes = {
-  Component: PropTypes.elementType.isRequired,
+  Component: PropTypes.elementType,
   store: PropTypes.object.isRequired,
   pageProps: PropTypes.object.isRequired,
 };
 
-NodeBird.getInitialProps = async context => {
+NodeBird.getInitialProps = async (context) => {
   // console.log('_app.js CONTEXT', context);
   const { ctx, Component } = context; // next에서 넣어주는 context
   let pageProps = {};
@@ -95,7 +132,7 @@ NodeBird.getInitialProps = async context => {
   }
   if (Component.getInitialProps) {
     // Component (pages 폴더에 있는 컴포넌트)에 getInitialProps가 있다면
-    pageProps = await Component.getInitialProps(ctx);
+    pageProps = (await Component.getInitialProps(ctx)) || {};
   }
 
   return { pageProps };

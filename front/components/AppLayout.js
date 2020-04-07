@@ -1,13 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { Menu, Input, Button, Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
 import { useSelector, useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import Router from 'next/router';
 
 const AppLayout = ({ children }) => {
-  const { me } = useSelector(state => state.user);
+  const { me } = useSelector((state) => state.user);
+
+  const StyledSearch = styled(Input.Search)`
+    vertical-align: middle;
+  `;
+
+  const onSearch = useCallback((value) => {
+    Router.push(
+      { pathname: '/hashtag', query: { tag: value } },
+      `/hashtag/${value}`,
+    );
+  }, []);
 
   return (
     <div>
@@ -28,7 +41,7 @@ const AppLayout = ({ children }) => {
           </Menu.Item>
         ) : null}
         <Menu.Item key='mail'>
-          <Input.Search style={{ verticalAlign: 'middle' }} enterButton />
+          <StyledSearch enterButton onSearch={onSearch} />
         </Menu.Item>
       </Menu>
       <Row gutter={8}>

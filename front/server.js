@@ -45,6 +45,10 @@ app.prepare().then(() => {
     return app.render(req, res, '/profile', { id: req.params.id });
   });
 
+  server.get('/post/:id', (req, res) => {
+    return app.render(req, res, '/post', { id: req.params.id });
+  });
+
   server.get('*', (req, res) => {
     // 모든 get 요청 처리
     return handle(req, res);
