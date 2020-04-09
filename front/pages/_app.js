@@ -92,6 +92,24 @@ function NodeBird({ Component, pageProps, store }) {
             href:
               'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css',
           },
+          {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '32x32',
+            href: 'http://localhost:3060/favicon-32x32.png',
+          },
+          {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '96x96',
+            href: 'http://localhost:3060/favicon-96x96.png',
+          },
+          {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '16x16',
+            href: 'http://localhost:3060/favicon-16x16.png',
+          },
         ]}
         script={[
           {

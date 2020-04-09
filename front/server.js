@@ -1,9 +1,11 @@
 const express = require('express');
+const favicon = require('serve-favicon');
 const next = require('next');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
 const dotenv = require('dotenv');
+const path = require('path');
 
 const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
@@ -15,6 +17,7 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const server = express();
+  server.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
   server.use(morgan('dev'));
   server.use(express.json());

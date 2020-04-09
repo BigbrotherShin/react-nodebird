@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { Button, List, Card } from 'antd';
 import { StopOutlined } from '@ant-design/icons';
-import NicknameEditForm from '../components/NicknameEditForm';
+import NicknameEditForm from '../containers/NicknameEditForm';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -14,7 +14,7 @@ import {
   UNLOAD_FOLLOWINGS,
 } from '../reducers/user';
 import { LOAD_USER_POSTS_REQUEST, UNLOAD_MAINPOSTS } from '../reducers/post';
-import PostCard from '../components/PostCard';
+import PostCard from '../containers/PostCard';
 import Axios from 'axios';
 
 const Profile = ({ id }) => {
