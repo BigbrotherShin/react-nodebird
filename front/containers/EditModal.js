@@ -7,21 +7,21 @@ const EditModal = ({ postEditVisible, setPostEditVisible, post }) => {
   const dispatch = useDispatch();
   const [editPostContent, setEditPostContent] = useState(post && post.content);
   const { editedPostContent, isEditingPostContent } = useSelector(
-    state => state.post,
+    (state) => state.post,
   );
 
   useEffect(() => {
     if (editedPostContent) {
-      setPostEditVisible(prevState => !prevState);
+      setPostEditVisible((prevState) => !prevState);
     }
   }, [editedPostContent]);
 
   const handleCancle = useCallback(() => {
-    setPostEditVisible(prevState => !prevState);
+    setPostEditVisible((prevState) => !prevState);
     setEditPostContent(post && post.content);
   }, []);
 
-  const onChangeEditPostContent = useCallback(e => {
+  const onChangeEditPostContent = useCallback((e) => {
     setEditPostContent(e.target.value);
   }, []);
 

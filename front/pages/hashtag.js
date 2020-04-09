@@ -6,7 +6,7 @@ import {
   UNLOAD_MAINPOSTS,
   LOAD_MAIN_POSTS_REQUEST,
 } from '../reducers/post';
-import PostCard from '../components/PostCard';
+import PostCard from '../containers/PostCard';
 
 const Hashtag = ({ tag }) => {
   const { mainPosts, hasMorePost } = useSelector((state) => state.post);

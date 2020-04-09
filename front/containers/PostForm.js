@@ -10,13 +10,13 @@ import {
 const PostForm = () => {
   const dispatch = useDispatch();
   const { imagePaths, isAddingPost, postAdded } = useSelector(
-    state => state.post,
+    (state) => state.post,
   );
   const imageInput = useRef();
   const [text, setText] = useState('');
 
   const onChangeText = useCallback(
-    e => {
+    (e) => {
       setText(e.target.value);
     },
     [text],
@@ -27,7 +27,7 @@ const PostForm = () => {
       return alert('게시글은 한 글자 이상이어야 합니다.');
     }
     const formData = new FormData();
-    imagePaths.forEach(i => {
+    imagePaths.forEach((i) => {
       // router upload.array('image') middleware의 'image'와 이름이 같게
       // AJAX 통신시 'key(image)': 'value(f)' 형식으로 formData에 append해서 직접 보내주어야 함
       formData.append('image', i);
@@ -44,10 +44,10 @@ const PostForm = () => {
     setText('');
   }, [postAdded === true]);
 
-  const onChangeImages = useCallback(e => {
+  const onChangeImages = useCallback((e) => {
     // console.log('Is this??', e.target.files);
     const imageFormData = new FormData();
-    [].forEach.call(e.target.files, f => {
+    [].forEach.call(e.target.files, (f) => {
       // router.post('/post/images/', multer.array('image'), (req, res, next) => {});
       return imageFormData.append('image', f); // router upload.array('image') middleware의 'image'와 이름이 같게
       // AJAX 통신시 'key(image)': 'value(f)' 형식으로 formData에 append해서 직접 보내주어야 함
@@ -64,7 +64,7 @@ const PostForm = () => {
   }, [imageInput.current]);
 
   const onRemoveImage = useCallback(
-    index => () => {
+    (index) => () => {
       dispatch({
         type: REMOVE_IMAGE,
         index,

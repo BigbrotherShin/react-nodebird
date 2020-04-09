@@ -122,7 +122,7 @@ NodeBird.getInitialProps = async (context) => {
   const cookie = ctx.isServer ? ctx.req.headers.cookie : '';
   // SSR 환경일 때만 서버사이드에서 쿠키를 넣어주고, 클라이언트 환경일 때는 넣지 않음
   if (ctx.isServer && cookie) {
-    // 서버 환경일 때만 쿠키를 심어줌.
+    // 서버 환경일 때만 쿠키를 심어줌. 클라이언트 환경일 때는 브라우저가 자동으로 쿠키를 넣어줌
     Axios.defaults.headers.Cookie = cookie; // defaluts: 모든 axios 요청 시에 쿠키 데이터를 심어줌.
   }
   if (!state.user.me) {

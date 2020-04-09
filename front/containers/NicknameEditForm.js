@@ -4,11 +4,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { EDIT_USER_NICKNAME_REQUEST } from '../reducers/user';
 
 const NicknameEditForm = () => {
-  const { me, isEditingNickname } = useSelector(state => state.user);
+  const { me, isEditingNickname } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [text, setText] = useState(me && me.nickname);
 
-  const onChangeNickname = useCallback(e => {
+  const onChangeNickname = useCallback((e) => {
     setText(e.target.value);
   }, []);
 

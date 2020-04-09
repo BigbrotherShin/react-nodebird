@@ -1,7 +1,7 @@
 // Next import React form 'react' 할 필요가 없다.
 import React, { useEffect, useCallback, useRef } from 'react';
-import PostForm from '../components/PostForm';
-import PostCard from '../components/PostCard';
+import PostForm from '../containers/PostForm';
+import PostCard from '../containers/PostCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { LOAD_MAIN_POSTS_REQUEST, UNLOAD_MAINPOSTS } from '../reducers/post';
 
