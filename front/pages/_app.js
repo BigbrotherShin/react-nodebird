@@ -22,13 +22,9 @@ const makeStore = (initialState, options) => {
   // const enhancer = compose(applyMiddleware([...middlewares]));
 
   const composeEnhancers =
-    typeof window === 'object' &&
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ &&
-    process.env.NODE_ENV !== 'production'
-      ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-          // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-        })
-      : compose;
+    (typeof window !== 'undefined' &&
+      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
+    compose;
 
   const enhancer = composeEnhancers(
     applyMiddleware(...middlewares),
@@ -67,6 +63,10 @@ function NodeBird({ Component, pageProps, store }) {
           {
             name: 'og.title',
             content: 'BigbroShin SNS',
+          },
+          {
+            property: 'og:image',
+            content: 'http://localhost:3060/favicon-96x96.png',
           },
           {
             name: 'og:description',

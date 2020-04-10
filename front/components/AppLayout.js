@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useCallback, memo } from 'react';
-import { Menu, Input, Button, Row, Col } from 'antd';
+import React, { useCallback, memo } from 'react';
+import { Menu, Input, Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import LoginForm from '../containers/LoginForm';
 import UserProfile from '../containers/UserProfile';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Router from 'next/router';
 

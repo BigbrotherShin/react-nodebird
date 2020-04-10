@@ -3,6 +3,9 @@ import Helmet from 'react-helmet';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import PropTypes from 'prop-types';
 import { ServerStyleSheet } from 'styled-components';
+import 'react-app-polyfill/ie9';
+import 'react-app-polyfill/ie11';
+import 'react-app-polyfill/stable';
 
 class MyDocument extends Document {
   static async getInitialProps(context) {
@@ -41,6 +44,7 @@ class MyDocument extends Document {
         <Head>{Object.values(helmet).map((el) => el.toComponent())}</Head>
         <body {...bodyAttrs}>
           <Main />
+
           <NextScript />
         </body>
       </Html>

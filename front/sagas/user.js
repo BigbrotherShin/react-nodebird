@@ -63,10 +63,10 @@ function* login(action) {
       data: result.data, // 서버에서 보내준 fullUser 객체
     });
   } catch (e) {
-    console.error(e); // loginAPI 실패
+    console.dir(e); // loginAPI 실패
     yield put({
       type: LOG_IN_FAILURE,
-      error: e,
+      error: e.response && e.response.data,
     });
   }
 }

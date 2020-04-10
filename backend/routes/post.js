@@ -106,11 +106,11 @@ router.post('/:id/comment', isLoggedIn, findPost, async (req, res, next) => {
   // POST /api/post/:id/comment
   try {
     const newComment = await db.Comment.create({
-      PostId: post.id,
+      PostId: req.findPost.id,
       UserId: req.user.id,
       content: req.body.content,
     });
-    await post.addComment(newComment.id);
+    await req.findPost.addComment(newComment.id);
     const comment = await db.Comment.findOne({
       where: {
         id: newComment.id,

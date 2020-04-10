@@ -1,5 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
-import { Card, Avatar, List, Comment, Dropdown, Menu } from 'antd';
+import { Card, Avatar, List, Comment, Dropdown } from 'antd';
 import {
   RetweetOutlined,
   HeartOutlined,
@@ -16,18 +16,16 @@ import {
   UNLIKE_POST_REQUEST,
   LIKE_POST_REQUEST,
   RETWEET_REQUEST,
-  REMOVE_POST_REQUEST,
 } from '../reducers/post';
 import PostImages from '../components/PostImages';
 import PostCardContent from '../components/PostCardContent';
-import EditModal from './EditModal';
 import CommentForm from './CommentForm';
 import FollowButton from './FollowButton';
+import EllipsisMenu from './EllipsisMenu';
 
 const PostCard = memo(({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
 
-  const [postEditVisible, setPostEditVisible] = useState(false);
   const { me } = useSelector((state) => state.user);
   const { isLoadingComments } = useSelector((state) => state.post);
   const dispatch = useDispatch();
@@ -75,33 +73,6 @@ const PostCard = memo(({ post }) => {
     });
   }, [me && me.id, post && post.id]);
 
-  const onPostDelete = useCallback(() => {
-    dispatch({
-      type: REMOVE_POST_REQUEST,
-      data: post.id,
-    });
-  }, [post.id]);
-
-  const onPostEditVisible = useCallback(() => {
-    setPostEditVisible((prevState) => !prevState);
-  }, []);
-
-  const menu = (
-    <Menu>
-      <Menu.Item key='0' onClick={onPostEditVisible}>
-        수정
-      </Menu.Item>
-      <EditModal
-        postEditVisible={postEditVisible}
-        setPostEditVisible={setPostEditVisible}
-        post={post}
-      />
-      <Menu.Item key='1' onClick={onPostDelete}>
-        삭제
-      </Menu.Item>
-    </Menu>
-  );
-
   const CardWrapper = styled.div`
     margin-bottom: 20px;
   `;
@@ -140,7 +111,10 @@ const PostCard = memo(({ post }) => {
             loading={isLoadingComments}
           />,
           <span>
-            <Dropdown overlay={menu} trigger={['click']}>
+            <Dropdown
+              overlay={<EllipsisMenu post={post} />}
+              trigger={['click']}
+            >
               <a
                 className='ant-dropdown-link'
                 onClick={(e) => e.preventDefault()}
@@ -224,9 +198,9 @@ const PostCard = memo(({ post }) => {
         <>
           <CommentForm post={post} />
           <List
-            header={`${post.comments ? post.comments.length : 0} 댓글`}
+            header={`${post.Comments ? post.Comments.length : 0} 댓글`}
             itemLayout='horizontal'
-            dataSource={post.comments || []}
+            dataSource={post.Comments || []}
             renderItem={(item) => (
               <List.Item>
                 <Comment
@@ -265,7 +239,7 @@ PostCard.propTypes = {
     content: PropTypes.string,
     img: PropTypes.string,
     createdAt: PropTypes.string,
-    comments: PropTypes.array,
+    Comments: PropTypes.array,
   }),
 };
 

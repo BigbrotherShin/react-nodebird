@@ -1,14 +1,19 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, memo, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
 import Link from 'next/link';
+import styled from 'styled-components';
 import { useInput } from '../pages/signup';
 import { useDispatch, useSelector } from 'react-redux';
 import { LOG_IN_REQUEST } from '../reducers/user';
 
-const LoginForm = () => {
+const LoginError = styled.div`
+  color: red;
+`;
+
+const LoginForm = memo(() => {
   const [id, , onChangeId] = useInput('');
   const [password, , onChangePassword] = useInput('');
-  const { isLoggingIn } = useSelector((state) => state.user);
+  const { isLoggingIn, logInErrorReason } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const onSubmitForm = useCallback(() => {
@@ -48,8 +53,9 @@ const LoginForm = () => {
           <a>회원가입</a>
         </Link>
       </div>
+      {logInErrorReason ? <LoginError>{logInErrorReason}</LoginError> : null}
     </Form>
   );
-};
+});
 
 export default LoginForm;

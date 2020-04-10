@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, memo } from 'react';
 import { Card, Avatar, Button } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { LOG_OUT_REQUEST } from '../reducers/user';
 import Link from 'next/link';
 
-const UserProfile = () => {
+const UserProfile = memo(() => {
   const { me } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const onLogout = useCallback(() => {
@@ -66,6 +66,6 @@ const UserProfile = () => {
       <Button onClick={onLogout}>로그아웃</Button>
     </Card>
   );
-};
+});
 
 export default UserProfile;

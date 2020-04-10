@@ -1,9 +1,14 @@
 import React, { useState, useCallback, memo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Input, Checkbox, Button } from 'antd';
-import { SIGN_UP_REQUEST } from '../reducers/user';
 import Router from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { SIGN_UP_REQUEST } from '../reducers/user';
+
+const SignUpError = styled.div`
+  color: red;
+`;
 
 const TextInput = memo(({ name, value, onChange }) => {
   return <Input name={name} value={value} required onChange={onChange} />;
@@ -18,7 +23,7 @@ TextInput.propTypes = {
 export const useInput = (initValue = null) => {
   const [value, setter] = useState(initValue);
   const eventHandler = useCallback(
-    e => {
+    (e) => {
       setter(e.target.value);
     },
     [value],
@@ -27,7 +32,7 @@ export const useInput = (initValue = null) => {
 };
 
 const Signup = () => {
-  const { isSigningUp, signedUp, me } = useSelector(state => state.user);
+  const { isSigningUp, signedUp, me } = useSelector((state) => state.user);
 
   const [passwordCheck, setPasswordCheck] = useState('');
   const [term, setTerm] = useState(false);
@@ -74,7 +79,7 @@ const Signup = () => {
   }, [signedUp === true]);
 
   const onChangePasswordChk = useCallback(
-    e => {
+    (e) => {
       setPasswordError(e.target.value !== password);
       setPasswordCheck(e.target.value);
     },
@@ -82,7 +87,7 @@ const Signup = () => {
   );
 
   const onChangeTerm = useCallback(
-    e => {
+    (e) => {
       if (!term) setTermError(false);
       setTerm(e.target.checked);
     },
@@ -125,7 +130,7 @@ const Signup = () => {
           onChange={onChangePasswordChk}
         />
         {password && passwordError && (
-          <div style={{ color: 'red' }}>비밀번호가 일치하지 않습니다.</div>
+          <SignUpError>비밀번호가 일치하지 않습니다.</SignUpError>
         )}
       </div>
 
@@ -133,9 +138,7 @@ const Signup = () => {
         <Checkbox name='user-term' checked={term} onChange={onChangeTerm}>
           약관 동의
         </Checkbox>
-        {termError && (
-          <div style={{ color: 'red' }}>약관에 동의하셔야 합니다.</div>
-        )}
+        {termError && <SignUpError>약관에 동의하셔야 합니다.</SignUpError>}
       </div>
 
       <div style={{ marginTop: '10px' }}>

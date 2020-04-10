@@ -173,7 +173,7 @@ const reducer = (state = initialState, action) => {
         const postIndex = draft.mainPosts.findIndex(
           (v) => v.id === action.data.postId,
         );
-        draft.mainPosts[postIndex].Comments.push(actio.data.comment);
+        draft.mainPosts[postIndex].Comments.push(action.data.comment);
         draft.isAddingComment = false;
         draft.commentAdded = true;
         break;
