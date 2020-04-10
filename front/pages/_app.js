@@ -66,7 +66,7 @@ function NodeBird({ Component, pageProps, store }) {
           },
           {
             property: 'og:image',
-            content: 'http://bigbroshin/favicon-96x96.png',
+            content: 'http://bigbroshin.net/favicon-96x96.png',
           },
           {
             name: 'og:description',
@@ -96,19 +96,19 @@ function NodeBird({ Component, pageProps, store }) {
             rel: 'icon',
             type: 'image/png',
             sizes: '32x32',
-            href: 'http://bigbroshin/favicon-32x32.png',
+            href: 'http://bigbroshin.net/favicon-32x32.png',
           },
           {
             rel: 'icon',
             type: 'image/png',
             sizes: '96x96',
-            href: 'http://bigbroshin/favicon-96x96.png',
+            href: 'http://bigbroshin.net/favicon-96x96.png',
           },
           {
             rel: 'icon',
             type: 'image/png',
             sizes: '16x16',
-            href: 'http://bigbroshin/favicon-16x16.png',
+            href: 'http://bigbroshin.net/favicon-16x16.png',
           },
         ]}
         script={[
