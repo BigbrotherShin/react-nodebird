@@ -51,6 +51,10 @@ app.use('/api/posts', postsAPIRouter);
 app.use('/api/post', postAPIRouter);
 app.use('/api/hashtag', hashtagAPIRouter);
 
+app.get('/', (req, res) => {
+  res.send('BigbroShin SNS backend 정상동작');
+});
+
 app.listen(
   process.env.NODE_ENV === 'production' ? process.env.PORT : 3065,
   () => {
