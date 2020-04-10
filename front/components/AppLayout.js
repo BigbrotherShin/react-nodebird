@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, memo } from 'react';
 import { Menu, Input, Button, Row, Col } from 'antd';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Router from 'next/router';
 
-const AppLayout = ({ children }) => {
+const AppLayout = memo(({ children }) => {
   const { me } = useSelector((state) => state.user);
 
   const StyledSearch = styled(Input.Search)`
@@ -59,7 +59,7 @@ const AppLayout = ({ children }) => {
       </Row>
     </div>
   );
-};
+});
 
 AppLayout.propTypes = {
   children: PropTypes.node,

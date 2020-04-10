@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
-import { Button, List, Card } from 'antd';
-import { StopOutlined } from '@ant-design/icons';
+import React, { useCallback } from 'react';
+import { Button, List } from 'antd';
 import NicknameEditForm from '../containers/NicknameEditForm';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -9,13 +8,12 @@ import {
   UNFOLLOW_USER_REQUEST,
   LOAD_FOLLOWINGS_REQUEST,
   LOAD_FOLLOWERS_REQUEST,
-  LOAD_USER_REQUEST,
   UNLOAD_FOLLOWERS,
   UNLOAD_FOLLOWINGS,
 } from '../reducers/user';
 import { LOAD_USER_POSTS_REQUEST, UNLOAD_MAINPOSTS } from '../reducers/post';
 import PostCard from '../containers/PostCard';
-import Axios from 'axios';
+import FollowList from '../components/FollowList';
 
 const Profile = ({ id }) => {
   const dispatch = useDispatch();
@@ -76,72 +74,22 @@ const Profile = ({ id }) => {
   return me ? (
     <div>
       <NicknameEditForm />
-      <List
-        style={{ marginBottom: '20px' }}
-        grid={{ gutter: 4, xs: 2, md: 3 }}
-        size='small'
-        header={<div>팔로워 목록</div>}
-        loadMore={
-          hasMoreFollowers ? (
-            <Button style={{ width: '100%' }} onClick={loadMoreFollowers}>
-              더 보기
-            </Button>
-          ) : null
-        }
-        bordered
-        dataSource={followerList}
-        renderItem={(item) => {
-          return (
-            <List.Item style={{ maginTop: '20px' }}>
-              <Card
-                actions={[
-                  <StopOutlined
-                    key={item.id}
-                    onClick={onFollowerDelete(item.id)}
-                  />,
-                ]}
-              >
-                <Card.Meta description={item.nickname} />
-              </Card>
-            </List.Item>
-          );
-        }}
+      <FollowList
+        header='팔로워'
+        hasMore={hasMoreFollowers}
+        loadMore={loadMoreFollowers}
+        data={followerList}
+        unFollow={onFollowerDelete}
+      />
+      <FollowList
+        header='팔로잉'
+        hasMore={hasMoreFollowings}
+        loadMore={loadMoreFollowings}
+        data={followingList}
+        unFollow={onFollowingDelete}
       />
       <List
         style={{ marginBottom: '20px' }}
-        grid={{ gutter: 4, xs: 2, md: 3 }}
-        size='small'
-        header={<div>팔로잉 목록</div>}
-        loadMore={
-          hasMoreFollowings ? (
-            <Button style={{ width: '100%' }} onClick={loadMoreFollowings}>
-              더 보기
-            </Button>
-          ) : null
-        }
-        bordered
-        dataSource={followingList}
-        renderItem={(item) => {
-          return (
-            <List.Item style={{ maginTop: '20px' }}>
-              <Card
-                actions={[
-                  <StopOutlined
-                    key={item.id}
-                    onClick={onFollowingDelete(item.id)}
-                  />,
-                ]}
-              >
-                <Card.Meta description={item.nickname} />
-              </Card>
-            </List.Item>
-          );
-        }}
-      />
-      <List
-        style={{ marginBottom: '20px' }}
-        // grid={{ gutter: 4, xs: 2, md: 3 }}
-        // size='large'
         header={<div>게시물</div>}
         loadMore={
           hasMorePost ? (

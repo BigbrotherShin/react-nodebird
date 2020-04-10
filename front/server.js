@@ -17,7 +17,9 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const server = express();
-  server.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+  server.use(favicon(path.join(__dirname, 'public', 'favicon-16x16.png')));
+  server.use(favicon(path.join(__dirname, 'public', 'favicon-32x32.png')));
+  server.use(favicon(path.join(__dirname, 'public', 'favicon-96x96.png')));
 
   server.use(morgan('dev'));
   server.use(express.json());
