@@ -7,13 +7,12 @@ const expressSession = require('express-session');
 const dotenv = require('dotenv');
 const path = require('path');
 
-const mode =
-  process.env.NODE_ENV !== 'production' ||
-  process.env.NODE_ENV === 'production';
+const dev = process.env.NODE_ENV !== 'production';
+const prod = process.env.NODE_ENV === 'production';
 
 dotenv.config();
 
-const app = next({ mode });
+const app = next({ dev });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
@@ -60,7 +59,7 @@ app.prepare().then(() => {
     return handle(req, res);
   });
 
-  server.listen(3060, () => {
-    console.log('next+expresss running on port 3060');
+  server.listen(prod ? process.env.PORT : 3060, () => {
+    console.log(`next+expresss running on port ${process.env.PORT}`);
   });
 });
