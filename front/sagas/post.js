@@ -44,8 +44,6 @@ import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
 import Axios from 'axios';
 
-Axios.defaults.baseURL = 'http://localhost:3065/api';
-
 function addPostAPI(postData) {
   return Axios.post('/post/', postData, {
     withCredentials: true, // 로그인 여부를 확인하기 위해 쿠키를 보냄

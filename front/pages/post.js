@@ -31,11 +31,11 @@ const Post = ({ id }) => {
             content:
               singlePost.Images &&
               singlePost.Images[0] &&
-              `http://localhost:3065/${singlePost.Images[0].src}`,
+              `http://api.bigbroshin/${singlePost.Images[0].src}`,
           },
           {
             property: 'og:url',
-            content: `http://localhost:3060/post/${id}`,
+            content: `http://bigbroshin/post/${id}`,
           },
         ]}
       />

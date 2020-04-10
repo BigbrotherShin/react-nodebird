@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Slider from 'react-slick';
 import PropTypes from 'prop-types';
 import { Indicator, StyledImg } from './styles/ImagesZoomStyle';
+import { backUrl } from '../config/config';
 
 const ImagesZoom = ({ images, onClose }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -18,7 +19,7 @@ const ImagesZoom = ({ images, onClose }) => {
             {images.map((v, i) => {
               return (
                 <div>
-                  <StyledImg alt='v' src={`http://localhost:3065/${v.src}`} />
+                  <StyledImg alt='v' src={`${backUrl}/${v.src}`} />
                 </div>
               );
             })}
