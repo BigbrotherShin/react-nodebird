@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Slider from 'react-slick';
 import PropTypes from 'prop-types';
-import { Indicator, StyledImg } from './styles/ImagesZoomStyle';
+import { StyledImg } from './styles/ImagesZoomStyle';
 import { backUrl } from '../config/config';
 
-const ImagesZoom = ({ images, onClose }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+const ImagesZoom = ({ images }) => {
+  const [setCurrentSlide] = useState(0);
 
   return (
     <div>
@@ -24,11 +24,6 @@ const ImagesZoom = ({ images, onClose }) => {
               );
             })}
           </Slider>
-          <Indicator>
-            <div>
-              {currentSlide + 1} / {images.length}
-            </div>
-          </Indicator>
         </div>
       </div>
     </div>

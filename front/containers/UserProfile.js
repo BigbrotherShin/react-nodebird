@@ -29,7 +29,6 @@ const UserProfile = memo(() => {
             </div>
           </a>
         </Link>,
-        ,
         <Link
           key='following'
           href={{ pathname: '/profile', query: { id: me.id } }}

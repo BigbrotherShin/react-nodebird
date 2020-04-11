@@ -1,30 +1,48 @@
 import React, { useState, useCallback, memo } from 'react';
-import { Card, Avatar, List, Comment, Dropdown } from 'antd';
+import { Card, Avatar, Dropdown, Tooltip, Modal } from 'antd';
 import {
   RetweetOutlined,
   HeartOutlined,
   MessageOutlined,
   EllipsisOutlined,
   HeartTwoTone,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
 import styled from 'styled-components';
+import moment from 'moment';
 import {
   LOAD_COMMENTS_REQUEST,
   UNLIKE_POST_REQUEST,
   LIKE_POST_REQUEST,
   RETWEET_REQUEST,
+  REMOVE_POST_REQUEST,
 } from '../reducers/post';
 import PostImages from '../components/PostImages';
 import PostCardContent from '../components/PostCardContent';
 import CommentForm from './CommentForm';
 import FollowButton from './FollowButton';
 import EllipsisMenu from './EllipsisMenu';
+import CommentList from '../components/CommentList';
+import EditModal from './EditModal';
+
+moment.locale('ko');
+
+const { confirm } = Modal;
+
+const PostTimestamp = styled(Tooltip)`
+  display: inline-block;
+  float: right;
+  color: #cccccc;
+  font-size: 14px;
+  margin-top: 8px;
+`;
 
 const PostCard = memo(({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
+  const [postEditVisible, setPostEditVisible] = useState(false);
 
   const { me } = useSelector((state) => state.user);
   const { isLoadingComments } = useSelector((state) => state.post);
@@ -77,6 +95,22 @@ const PostCard = memo(({ post }) => {
     margin-bottom: 20px;
   `;
 
+  const showConfirm = useCallback(
+    (id) => () => {
+      confirm({
+        title: '정말로 포스트를 삭제하시겠습니까?',
+        icon: <ExclamationCircleOutlined />,
+        onOk() {
+          dispatch({
+            type: REMOVE_POST_REQUEST,
+            data: id,
+          });
+        },
+      });
+    },
+    [],
+  );
+
   return (
     <CardWrapper>
       {/* <Link
@@ -96,15 +130,23 @@ const PostCard = memo(({ post }) => {
         }
         actions={[
           <RetweetOutlined key='retweet' onClick={onRetweet} />,
-          liked ? (
-            <HeartTwoTone
-              key='heart'
-              twoToneColor='#eb2f96'
-              onClick={onToggleLike}
-            />
-          ) : (
-            <HeartOutlined key='heart' onClick={onToggleLike} />
-          ),
+          <>
+            {liked ? (
+              <HeartTwoTone
+                style={{ display: 'inline' }}
+                key='heart'
+                twoToneColor='#eb2f96'
+                onClick={onToggleLike}
+              />
+            ) : (
+              <HeartOutlined
+                style={{ display: 'inline' }}
+                key='heart'
+                onClick={onToggleLike}
+              />
+            )}
+            {post.Likers.length}
+          </>,
           <MessageOutlined
             key='message'
             onClick={toggleComment}
@@ -112,21 +154,37 @@ const PostCard = memo(({ post }) => {
           />,
           <span>
             <Dropdown
-              overlay={<EllipsisMenu post={post} />}
+              overlay={
+                <EllipsisMenu
+                  post={post}
+                  setPostEditVisible={setPostEditVisible}
+                  showConfirm={showConfirm}
+                />
+              }
               trigger={['click']}
             >
               <a
                 className='ant-dropdown-link'
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
               >
                 <EllipsisOutlined key='ellipsis' />
               </a>
             </Dropdown>
-            {/* {post.Comments ? post.Comments.length : 0} */}
+            <EditModal
+              postEditVisible={postEditVisible}
+              setPostEditVisible={setPostEditVisible}
+              post={post}
+            />
           </span>,
         ]}
         title={
-          post.RetweetId ? `${post.User.nickname}님이 리트윗 하셨습니다.` : null
+          <>
+            {post.RetweetId
+              ? `${post.User.nickname}님이 리트윗 하셨습니다.`
+              : null}
+          </>
         }
         extra={<FollowButton me={me} post={post} />}
       >
@@ -190,40 +248,24 @@ const PostCard = memo(({ post }) => {
                 <a style={{ color: '#7F7C7C' }}>{post.User.nickname}</a>
               </Link>
             }
-            description={<PostCardContent postData={post.content} />} // a tag x -> Next Link
+            description={
+              <>
+                <PostCardContent postData={post.content} />
+
+                <PostTimestamp
+                  title={moment(post.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                >
+                  <span>{moment(post.createdAt).fromNow()}</span>
+                </PostTimestamp>
+              </>
+            } // a tag x -> Next Link
           />
         )}
       </Card>
       {commentFormOpened && (
         <>
           <CommentForm post={post} />
-          <List
-            header={`${post.Comments ? post.Comments.length : 0} 댓글`}
-            itemLayout='horizontal'
-            dataSource={post.Comments || []}
-            renderItem={(item) => (
-              <List.Item>
-                <Comment
-                  author={item.User.nickname}
-                  avatar={
-                    <Link
-                      href={{
-                        pathname: '/user',
-                        query: { id: item.User.id },
-                      }}
-                      as={`/user/${item.User.id}`}
-                    >
-                      <a>
-                        <Avatar>{item.User.nickname[0]}</Avatar>
-                      </a>
-                    </Link>
-                  }
-                  content={item.content}
-                  // datetime={item.createdAt}
-                />
-              </List.Item>
-            )}
-          />
+          <CommentList comments={post.Comments} />
         </>
       )}
       {/* </div> */}

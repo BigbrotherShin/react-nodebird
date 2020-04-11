@@ -28,7 +28,9 @@ const FollowButton = ({ me, post }) => {
 
   return !me || post.User.id === me.id ? null : me.Followings &&
     me.Followings.find((v) => v.id === post.UserId) ? (
-    <Button onClick={onUnfollow(post.User.id)}>언팔로우</Button>
+    <Button type='dashed' onClick={onUnfollow(post.User.id)}>
+      언팔로우
+    </Button>
   ) : (
     <Button onClick={onFollow(post.User.id)}>팔로우</Button>
   );

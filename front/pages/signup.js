@@ -50,6 +50,13 @@ const Signup = () => {
     }
   }, [me && me.id]);
 
+  useEffect(() => {
+    if (signedUp) {
+      alert('회원가입에 성공하셨습니다! 로그인 해주세요.');
+      Router.push('/');
+    }
+  }, [signedUp]);
+
   const dispatch = useDispatch();
 
   const onFinish = useCallback(() => {

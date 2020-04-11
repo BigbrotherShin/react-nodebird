@@ -158,6 +158,7 @@ const reducer = (state = initialState, action) => {
           signUpData: action.data,
           isSigningUp: true,
           signUpErrorReason: '',
+          signedUp: false,
         };
       }
       case SIGN_UP_SUCCESS: {
