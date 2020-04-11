@@ -145,7 +145,7 @@ const PostCard = memo(({ post }) => {
                 onClick={onToggleLike}
               />
             )}
-            {post.Likers.length}
+            {post.Likers && post.Likers.length}
           </>,
           <MessageOutlined
             key='message'
