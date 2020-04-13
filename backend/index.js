@@ -6,6 +6,10 @@ const expressSession = require('express-session');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const path = require('path');
+const hpp = require('hpp');
+const helmet = require('helmet');
+
+const prod = process.env.NODE_ENV === 'production';
 
 const passportConfig = require('./passport');
 const db = require('./models');
@@ -19,16 +23,29 @@ const app = express();
 db.sequelize.sync();
 passportConfig();
 
-app.use(morgan('dev'));
+if (prod) {
+  app.use(hpp());
+  app.use(helmet());
+  app.use(morgan('combined'));
+  app.use(
+    cors({
+      origin: 'http://bigbroshin.net', // 요청 주소와 같게
+      credentials: true, // cors, axios에서 둘 다 true로
+    }),
+  );
+} else {
+  app.use(morgan('dev'));
+  app.use(
+    cors({
+      origin: true, // 요청 주소와 같게
+      credentials: true, // cors, axios에서 둘 다 true로
+    }),
+  );
+}
+
 app.use('/', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: true, // 요청 주소와 같게
-    credentials: true, // cors, axios에서 둘 다 true로
-  }),
-);
 app.use(cookieParser(process.env.COOKIE_SECRET)); // cookie 암호화 키. dotenv 라이브러리로 감춤
 app.use(
   expressSession({
@@ -38,6 +55,7 @@ app.use(
     cookie: {
       httpOnly: true, // javascript로 cookie에 접근하지 못하게 하는 옵션
       secure: false, // https 프로토콜만 허락하는 지 여부
+      domain: prod && '.bigbroshin.net',
     },
     name: 'rnbshj', //cookie 이름
   }),
@@ -55,9 +73,6 @@ app.get('/', (req, res) => {
   res.send('BigbroShin SNS backend 정상동작');
 });
 
-app.listen(
-  process.env.NODE_ENV === 'production' ? process.env.PORT : 3065,
-  () => {
-    console.log(`server is running on ${process.env.PORT}`);
-  },
-);
+app.listen(prod ? process.env.PORT : 3065, () => {
+  console.log(`server is running on ${process.env.PORT}`);
+});
