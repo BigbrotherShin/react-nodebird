@@ -36,7 +36,7 @@ const Post = ({ id }) => {
           },
           {
             property: 'og:url',
-            content: `http://bigbroshin/post/${id}`,
+            content: `http://bigbroshin.net/post/${id}`,
           },
         ]}
       />
