@@ -18,7 +18,10 @@ const PostImages = ({ images }) => {
   if (images.length === 1) {
     return (
       <>
-        <img src={images[0].src} onClick={onZoom} />
+        <img
+          src={images[0].src.replace(/original\//, 'thumb/')}
+          onClick={onZoom}
+        />
         <Modal
           visible={showImagesZoom}
           onCancel={onClose}
@@ -34,8 +37,16 @@ const PostImages = ({ images }) => {
     return (
       <>
         <div>
-          <img src={images[0].src} width='50%' onClick={onZoom} />
-          <img src={images[1].src} width='50%' onClick={onZoom} />
+          <img
+            src={images[0].src.replace(/original\//, 'thumb/')}
+            width='50%'
+            onClick={onZoom}
+          />
+          <img
+            src={images[1].src.replace(/original\//, 'thumb/')}
+            width='50%'
+            onClick={onZoom}
+          />
         </div>
         {showImagesZoom && (
           <Modal
@@ -53,7 +64,11 @@ const PostImages = ({ images }) => {
   return (
     <>
       <div>
-        <img src={images[0].src} width='50%' onClick={onZoom} />
+        <img
+          src={images[0].src.replace(/original\//, 'thumb/')}
+          width='50%'
+          onClick={onZoom}
+        />
         <div
           style={{
             display: 'inline-block',
