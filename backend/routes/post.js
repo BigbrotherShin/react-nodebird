@@ -5,7 +5,6 @@ const AWS = require('aws-sdk');
 const multerS3 = require('multer-s3');
 
 const db = require('../models');
-const { Sequelize } = require('../models');
 const { isLoggedIn, findPost } = require('./middleware');
 const router = express.Router();
 
@@ -15,12 +14,10 @@ AWS.config.update({
   secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
 });
 
-const { Op } = Sequelize;
-
 const upload = multer({
   storage: multerS3({
     s3: new AWS.S3(),
-    bucket: 'bigbroshinsns',
+    bucket: 'bigbroshin',
     key(req, file, cb) {
       cb(null, `original/${+new Date()}${path.basename(file.originalname)}`);
     },
