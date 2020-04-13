@@ -2,7 +2,6 @@ import React from 'react';
 import Slider from 'react-slick';
 import PropTypes from 'prop-types';
 import { StyledImgWrapper } from './styles/ImagesZoomStyle';
-import { backUrl } from '../config/config';
 
 const ImagesZoom = ({ images }) => {
   return (
@@ -13,7 +12,7 @@ const ImagesZoom = ({ images }) => {
             {images.map((v, i) => {
               return (
                 <StyledImgWrapper>
-                  <img alt='v' src={`${backUrl}/${v.src}`} />
+                  <img alt='v' src={v.src} />
                 </StyledImgWrapper>
               );
             })}

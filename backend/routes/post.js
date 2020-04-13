@@ -1,22 +1,28 @@
 const express = require('express');
+const path = require('path');
+const multer = require('multer');
+const AWS = require('aws-sdk');
+const multerS3 = require('multer-s3');
+
 const db = require('../models');
 const { Sequelize } = require('../models');
-const path = require('path');
 const { isLoggedIn, findPost } = require('./middleware');
-const multer = require('multer');
 const router = express.Router();
+
+AWS.config.update({
+  region: 'ap-northeast-2',
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+});
 
 const { Op } = Sequelize;
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination(req, file, done) {
-      done(null, 'uploads'); // 저장할 디렉토리, 첫 번째 arg는 서버에러 있을 때
-    },
-    filename(req, file, done) {
-      const ext = path.extname(file.originalname);
-      const basename = path.basename(file.originalname, ext); // SJH.png, ext===.png, basename===SJH
-      done(null, basename + new Date().valueOf() + ext);
+  storage: multerS3({
+    s3: new AWS.S3(),
+    bucket: 'bigbroshinsns',
+    key(req, file, cb) {
+      cb(null, `original/${+new Date()}${path.basename(file.originalname)}`);
     },
   }),
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB로 용량 제한. 큰 용량 허용할 때 해커 공격 가능
@@ -135,8 +141,8 @@ router.post('/images', upload.array('image'), (req, res) => {
   // upload.array() 이미지 여러 장 -> req.files
   // upload.single() 이미지 한 장 올릴 때 -> req.file
   // upload.none() 이미지나 파일을 안 올릴 때 -> req.body
-
-  res.json(req.files.map((v) => v.filename));
+  console.log(req.files);
+  res.json(req.files.map((v) => v.location));
 });
 
 router.post('/:id/like', isLoggedIn, findPost, async (req, res, next) => {

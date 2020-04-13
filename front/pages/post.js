@@ -29,9 +29,10 @@ const Post = ({ id }) => {
           {
             property: 'og:image',
             content:
-              singlePost.Images &&
-              singlePost.Images[0] &&
-              `http://api.bigbroshin/${singlePost.Images[0].src}`,
+              (singlePost.Images &&
+                singlePost.Images[0] &&
+                singlePost.Images[0].src) ||
+              'http://bigbroshin.net/favicon-96x96.png',
           },
           {
             property: 'og:url',

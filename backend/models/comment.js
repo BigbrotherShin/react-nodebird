@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   );
 
-  Comment.associate = db => {
+  Comment.associate = (db) => {
     db.Comment.belongsTo(db.User); // User에 속해있음. Comment 테이블에 UserId 저장
     db.Comment.belongsTo(db.Post); // Post에 속해있음. Comment 테이블에 PostId 저장
   };
