@@ -76,6 +76,11 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
         {
           model: db.Image,
         },
+        {
+          model: db.User,
+          as: 'Likers',
+          attributes: ['id', 'nickname'],
+        },
       ],
     });
     res.json(fullPost);
